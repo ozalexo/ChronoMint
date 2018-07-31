@@ -3,7 +3,7 @@
  * Licensed under the AGPL Version 3 license.
  */
 
-import { DAOS_REGISTER, DAOS_INITIALIZED } from './actions'
+import { DAOS_REGISTER, DAOS_INITIALIZED } from './constants'
 
 export const initialState = {
   byType: {},

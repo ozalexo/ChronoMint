@@ -90,7 +90,7 @@ class ProfileService extends EventEmitter {
     return personInfo
   }
 
-  async updateUserProfile({ avatar, userName, email, company, website, phone }, token){
+  async updateUserProfile ({ avatar, userName, email, company, website, phone }, token){
     const service = this.getServerProvider()
 
     const { data } = await service.post(UPDATE_PROFILE_COMBINE, {

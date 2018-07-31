@@ -24,8 +24,6 @@ import validate from './validate'
 
 import '../FormDialog.scss'
 
-export const FORM_CBE_TOKEN = 'CBETokenDialog'
-
 function mapStateToProps (state) {
   const selector = formValueSelector(FORM_CBE_TOKEN)
   return {

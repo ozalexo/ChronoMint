@@ -23,8 +23,6 @@ import GasSlider from 'components/common/GasSlider/GasSlider'
 import './ProfileContent.scss'
 import { prefix } from './lang'
 
-export const PROFILE_SIDE_PANEL_KEY = 'ProfileSidePanelKey'
-
 function mapStateToProps (state) {
   const session = state.get('session')
   return {

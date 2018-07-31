@@ -4,5 +4,7 @@
  */
 
 export const FORM_CBE_TOKEN = 'CBETokenDialog'
+export const PROFILE_SIDE_PANEL_KEY = 'ProfileSidePanelKey'
+export const NOTIFICATION_SIDE_PANEL_KEY = 'NotificationSidePanelKey'
 
 export default {}

@@ -14,12 +14,11 @@ import { connect } from 'react-redux'
 import { modalsClose } from 'redux/modals/actions'
 import { setRequiredSignatures } from '@chronobank/core/redux/operations/actions'
 import ErrorList from '@chronobank/core-dependencies/ErrorList'
+import { FORM_OPERATION_SETTINGS } from 'components/constants'
 import ModalDialog from 'components/dialogs/ModalDialog'
 import validator from '@chronobank/core/models/validator'
 
 import './FormDialog.scss'
-
-export const FORM_OPERATION_SETTINGS = 'OperationSettingsDialog'
 
 function prefix (token) {
   return `components.dialogs.OperationsSettingsDialog.${token}`

@@ -30,6 +30,7 @@ import IPFSImage from 'components/common/IPFSImage/IPFSImage'
 import ipfs from '@chronobank/core-dependencies/utils/IPFS'
 import FeeModel from '@chronobank/core/models/tokens/FeeModel'
 import ReissuableModel from '@chronobank/core/models/tokens/ReissuableModel'
+import { FORM_ADD_TOKEN_DIALOG } from 'components/constants'
 import validate, { normalizeSmallestUnit } from './validate'
 
 import './AddTokenForm.scss'
@@ -37,8 +38,6 @@ import './AddTokenForm.scss'
 export const prefix = (token) => {
   return `Assets.AddTokenForm.${token}`
 }
-
-export const FORM_ADD_TOKEN_DIALOG = 'AddTokenDialog'
 
 function mapStateToProps (state) {
   const assetsManager = state.get(DUCK_ASSETS_MANAGER)

@@ -15,11 +15,10 @@ import MultisigWalletModel from '@chronobank/core/models/wallet/MultisigWalletMo
 import MultisigWalletPendingTxModel from '@chronobank/core/models/wallet/MultisigWalletPendingTxModel'
 import Preloader from 'components/common/Preloader/Preloader'
 import { modalsClose } from 'redux/modals/actions'
+import { FORM_2FA_CONFIRM } from 'components/constants'
 import { prefix } from './lang'
 import './TwoFaConfirmModal.scss'
 import validate from './validate'
-
-export const FORM_2FA_CONFIRM = 'Form2FAConfirm'
 
 function mapStateToProps (state) {
   const selector = formValueSelector(FORM_2FA_CONFIRM)

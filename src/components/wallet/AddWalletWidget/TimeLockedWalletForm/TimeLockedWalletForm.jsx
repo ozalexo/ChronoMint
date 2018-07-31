@@ -16,10 +16,9 @@ import { Translate } from 'react-redux-i18n'
 import { change, Field, formPropTypes, formValueSelector, reduxForm } from 'redux-form/immutable'
 import { goToWallets, resetWalletsForm } from '@chronobank/core/redux/mainWallet/actions'
 import { DUCK_SESSION } from '@chronobank/core/redux/session/constants'
+import { FORM_TIME_LOCKED_WALLET_ADD } from 'components/constants'
 import { prefix } from './lang'
 import './TimeLockedWalletForm.scss'
-
-export const FORM_TIME_LOCKED_WALLET_ADD = 'TimeLockedWalletForm'
 
 function mapStateToProps (state, ownProps) {
   const selector = formValueSelector(FORM_TIME_LOCKED_WALLET_ADD)

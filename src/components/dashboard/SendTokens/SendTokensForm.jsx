@@ -37,11 +37,10 @@ import { DUCK_TOKENS } from '@chronobank/core/redux/tokens/constants'
 import { isBTCLikeBlockchain } from '@chronobank/core/redux/tokens/selectors'
 import inversedTheme from 'styles/themes/inversed'
 import { getMarket } from '@chronobank/core/redux/market/selectors'
+import { FORM_SEND_TOKENS } from 'components/constants'
 import { prefix } from './lang'
 import './SendTokensForm.scss'
 import validate from './validate'
-
-export const FORM_SEND_TOKENS = 'FormSendTokens'
 
 export const MODE_SIMPLE = 'simple'
 export const MODE_ADVANCED = 'advanced'

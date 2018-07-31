@@ -25,7 +25,7 @@ import spinner from 'assets/img/spinningwheel-1.gif'
 import { DUCK_NETWORK } from '@chronobank/login/redux/network/constants'
 import {
   FORM_WALLET_UPLOAD,
-} from '../../redux/actions'
+} from '../../components/constants'
 import {
   onSubmitWalletUpload,
   onSubmitWalletUploadFail,

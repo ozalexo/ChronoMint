@@ -3,7 +3,7 @@
  * Licensed under the AGPL Version 3 license.
  */
 
-import { PROFILE_SIDE_PANEL_KEY } from 'components/common/SideStack/SideStack'
+import { PROFILE_SIDE_PANEL_KEY } from 'components/constants'
 import ProfileContent from 'layouts/partials/ProfileContent/ProfileContent'
 import NotificationContent, { NOTIFICATION_PANEL_KEY } from 'layouts/partials/NotificationContent/NotificationContent'
 import MenuAssetsManagerMoreInfo, { MENU_ASSETS_MANAGER_PANEL_KEY } from 'layouts/partials/DrawerMainMenu/MenuAssetsManagerMoreInfo/MenuAssetsManagerMoreInfo'

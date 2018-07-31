@@ -29,10 +29,12 @@ import {
   initAccountsSignature,
 } from '@chronobank/login/redux/network/thunks'
 import {
-  FORM_LOGIN_PAGE,
-  FORM_LOGIN_PAGE_FIELD_SUCCESS_MESSAGE,
   navigateToSelectWallet,
 } from '../../redux/actions'
+import {
+  FORM_LOGIN_PAGE,
+  FORM_LOGIN_PAGE_FIELD_SUCCESS_MESSAGE,
+} from '../../components/constants'
 import {
   initLoginPage,
   onSubmitLoginForm,

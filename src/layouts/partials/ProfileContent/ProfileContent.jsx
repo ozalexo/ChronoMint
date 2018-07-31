@@ -13,7 +13,8 @@ import React, { PureComponent } from 'react'
 import { logout } from '@chronobank/core/redux/session/actions'
 import { getBlockchainAddressesList } from '@chronobank/core/redux/session/selectors'
 import { modalsOpen } from 'redux/modals/actions'
-import { IPFSImage, UpdateProfileDialog } from 'components'
+import IPFSImage from 'components/common/IPFSImage/IPFSImage'
+import UpdateProfileDialog from 'components/dialogs/UpdateProvideDialog/UpdateProfileDialog'
 import CopyIcon from 'components/dashboard/MicroIcon/CopyIcon'
 import QRIcon from 'components/dashboard/MicroIcon/QRIcon'
 import PKIcon from 'components/dashboard/MicroIcon/PKIcon'
@@ -22,8 +23,6 @@ import GasSlider from 'components/common/GasSlider/GasSlider'
 
 import './ProfileContent.scss'
 import { prefix } from './lang'
-
-export const PROFILE_SIDE_PANEL_KEY = 'ProfileSidePanelKey'
 
 function mapStateToProps (state) {
   const session = state.get('session')

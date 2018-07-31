@@ -18,6 +18,7 @@ import { connect } from 'react-redux'
 import { modalsOpen } from 'redux/modals/actions'
 import { search } from '@chronobank/core/redux/exchange/actions'
 import { DUCK_EXCHANGE } from '@chronobank/core/redux/exchange/constants'
+import { FORM_EXCHANGE } from 'components/constants'
 import AddExchangeDialog from 'components/exchange/AddExchangeDialog/AddExchangeDialog'
 import validate from './validate'
 
@@ -27,8 +28,6 @@ const MODES = [
   { index: 0, name: 'BUY', title: <Translate value={prefix('buy')} /> },
   { index: 1, name: 'SELL', title: <Translate value={prefix('sell')} /> },
 ]
-
-export const FORM_EXCHANGE = 'ExchangeForm'
 
 const mapStateToProps = (state) => {
   const exchange = state.get(DUCK_EXCHANGE)

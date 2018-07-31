@@ -11,9 +11,6 @@ import { DUCK_SIDES } from 'redux/sides/actions'
 
 import './SideStack.scss'
 
-export const PROFILE_SIDE_PANEL_KEY = 'ProfileSidePanelKey'
-export const NOTIFICATION_SIDE_PANEL_KEY = 'NotificationSidePanelKey'
-
 function mapStateToProps (state) {
   return {
     stack: state.get(DUCK_SIDES).stack,

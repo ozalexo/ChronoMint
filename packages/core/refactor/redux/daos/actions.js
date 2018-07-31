@@ -19,6 +19,7 @@ import {
 import { alternateTxHandlingFlow } from '../../../redux/tokens/actions'
 import { getAccount } from '../../../redux/session/selectors/models'
 import AbstractContractDAO from '../../daos/lib/AbstractContractDAO'
+import { DAOS_REGISTER } from './constants'
 
 export const initDAOs = ({ web3 }) => async (dispatch, getState) => {
   const account = getAccount(getState())

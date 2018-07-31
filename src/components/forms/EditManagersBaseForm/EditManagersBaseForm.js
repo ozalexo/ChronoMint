@@ -12,12 +12,10 @@ import { Translate } from 'react-redux-i18n'
 import { TextField } from 'redux-form-material-ui'
 import { Field, formPropTypes, reduxForm } from 'redux-form/immutable'
 import { DUCK_SESSION } from '@chronobank/core/redux/session/constants'
-
+import { FORM_ASSET_MANAGER } from 'components/constants'
 import './EditManagersBaseForm.scss'
 import ManagerItem from './ManagerItem'
 import validate from './validate'
-
-export const FORM_ASSET_MANAGER = 'AssetManagerDialog'
 
 function prefix (token) {
   return 'Assets.AssetManagerForm.' + token

@@ -19,7 +19,7 @@ import {
 } from '../../redux/thunks'
 import {
   FORM_CREATE_ACCOUNT,
-} from '../../redux/actions'
+} from '../../components/constants'
 import validate from './validate'
 import './CreateAccount.scss'
 

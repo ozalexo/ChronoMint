@@ -13,6 +13,7 @@ import { Field, reduxForm } from 'redux-form/immutable'
 import { revokeAsset } from '@chronobank/core/redux/assetsManager/actions'
 import { DUCK_ASSETS_MANAGER } from '@chronobank/core/redux/assetsManager/constants'
 import { DUCK_TOKENS } from '@chronobank/core/redux/tokens/constants'
+import { FORM_NAME } from 'components/constants'
 import TokensCollection from '@chronobank/core/models/tokens/TokensCollection'
 import validate from './validate'
 import './RevokeForm.scss'
@@ -20,8 +21,6 @@ import './RevokeForm.scss'
 export const prefix = (token) => {
   return `Assets.RevokeForm.${token}`
 }
-
-export const FORM_NAME = 'RevokeDialog'
 
 function mapStateToProps (state) {
   const form = state.get('form')

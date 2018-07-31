@@ -24,7 +24,7 @@ import {
 } from '../../redux/thunks'
 import {
   FORM_LOGIN_PAGE,
-} from '../../redux/actions'
+} from '../../components/constants'
 import validate from './validate'
 import './AccountName.scss'
 

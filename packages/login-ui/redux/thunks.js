@@ -36,6 +36,18 @@ import {
   isLocalNode,
 } from '@chronobank/login/network/settings'
 import * as LoginUIActions from './actions'
+import {
+  FORM_LOGIN_PAGE,
+  FORM_LOGIN_PAGE_FIELD_SUCCESS_MESSAGE,
+  FORM_CONFIRM_MNEMONIC,
+  FORM_RECOVER_ACCOUNT,
+  FORM_CREATE_ACCOUNT,
+  FORM_FOOTER_EMAIL_SUBSCRIPTION,
+  FORM_MNEMONIC_LOGIN_PAGE,
+  FORM_PRIVATE_KEY_LOGIN_PAGE,
+  FORM_RESET_PASSWORD,
+  FORM_WALLET_UPLOAD,
+} from '../components/constants'
 
 // #endregion
 
@@ -485,14 +497,13 @@ export const onSubmitConfirmMnemonicSuccess = () => (dispatch) => {
  * TODO: to add description
  * TODO: to add translation
  * TODO: to remove text from here
- * TODO: to move FORM_LOGIN_PAGE* constants from actions.js
  */
 export const onSubmitResetAccountPasswordSuccess = () => (dispatch) => {
   dispatch(NetworkActions.networkResetAccountRecoveryMode())
   dispatch(LoginUIActions.navigateToLoginPage())
   dispatch(change(
-    LoginUIActions.FORM_LOGIN_PAGE,
-    LoginUIActions.FORM_LOGIN_PAGE_FIELD_SUCCESS_MESSAGE,
+    FORM_LOGIN_PAGE,
+    FORM_LOGIN_PAGE_FIELD_SUCCESS_MESSAGE,
     'Your password has been reset.',
   ))
 }
@@ -585,7 +596,7 @@ export const onWalletSelect = (wallet) => (dispatch, getState) => {
  */
 export const onSubmitSubscribeNewsletterFail = (errors, submitErrors) =>
   (dispatch) => {
-    dispatch(stopSubmit(LoginUIActions.FORM_FOOTER_EMAIL_SUBSCRIPTION, submitErrors && submitErrors.errors))
+    dispatch(stopSubmit(FORM_FOOTER_EMAIL_SUBSCRIPTION, submitErrors && submitErrors.errors))
   }
 
 /*
@@ -594,7 +605,7 @@ export const onSubmitSubscribeNewsletterFail = (errors, submitErrors) =>
  * TODO: to rework it, merge into one action onSubmitPageFail
  */
 export const onSubmitCreateAccountPageFail = (errors, submitErrors) => (dispatch) => {
-  dispatch(stopSubmit(LoginUIActions.FORM_CREATE_ACCOUNT, submitErrors && submitErrors.errors))
+  dispatch(stopSubmit(FORM_CREATE_ACCOUNT, submitErrors && submitErrors.errors))
 }
 
 /*
@@ -603,7 +614,7 @@ export const onSubmitCreateAccountPageFail = (errors, submitErrors) => (dispatch
  * TODO: to rework it, merge into one action onSubmitPageFail
  */
 export const onSubmitConfirmMnemonicFail = (errors, submitErrors) => (dispatch) => {
-  dispatch(stopSubmit(LoginUIActions.FORM_CONFIRM_MNEMONIC, submitErrors && submitErrors.errors))
+  dispatch(stopSubmit(FORM_CONFIRM_MNEMONIC, submitErrors && submitErrors.errors))
 }
 
 /*
@@ -612,7 +623,7 @@ export const onSubmitConfirmMnemonicFail = (errors, submitErrors) => (dispatch) 
  * TODO: to rework it, merge into one action onSubmitPageFail
  */
 export const onSubmitMnemonicLoginFormFail = (errors, submitErrors) => (dispatch) => {
-  dispatch(stopSubmit(LoginUIActions.FORM_MNEMONIC_LOGIN_PAGE, submitErrors && submitErrors.errors))
+  dispatch(stopSubmit(FORM_MNEMONIC_LOGIN_PAGE, submitErrors && submitErrors.errors))
 }
 
 /*
@@ -621,7 +632,7 @@ export const onSubmitMnemonicLoginFormFail = (errors, submitErrors) => (dispatch
  * TODO: to rework it, merge into one action onSubmitPageFail
  */
 export const onSubmitPrivateKeyLoginFormFail = (errors, submitErrors) => (dispatch) => {
-  dispatch(stopSubmit(LoginUIActions.FORM_PRIVATE_KEY_LOGIN_PAGE, submitErrors && submitErrors.errors))
+  dispatch(stopSubmit(FORM_PRIVATE_KEY_LOGIN_PAGE, submitErrors && submitErrors.errors))
 }
 
 /*
@@ -630,7 +641,7 @@ export const onSubmitPrivateKeyLoginFormFail = (errors, submitErrors) => (dispat
  * TODO: to rework it, merge into one action onSubmitPageFail
  */
 export const onSubmitLoginFormFail = (errors, submitErrors) => (dispatch) => {
-  dispatch(stopSubmit(LoginUIActions.FORM_LOGIN_PAGE, submitErrors && submitErrors.errors))
+  dispatch(stopSubmit(FORM_LOGIN_PAGE, submitErrors && submitErrors.errors))
   dispatch(NetworkActions.networkResetLoginSubmitting())
 }
 
@@ -640,7 +651,7 @@ export const onSubmitLoginFormFail = (errors, submitErrors) => (dispatch) => {
  * TODO: to rework it, merge into one action onSubmitPageFail
  */
 export const onSubmitRecoverAccountFormFail = (errors, submitErrors) => (dispatch) => {
-  dispatch(stopSubmit(LoginUIActions.FORM_RECOVER_ACCOUNT, submitErrors && submitErrors.errors))
+  dispatch(stopSubmit(FORM_RECOVER_ACCOUNT, submitErrors && submitErrors.errors))
 }
 
 /*
@@ -649,7 +660,7 @@ export const onSubmitRecoverAccountFormFail = (errors, submitErrors) => (dispatc
  * TODO: to rework it, merge into one action onSubmitPageFail
  */
 export const onSubmitResetAccountPasswordFail = (errors, submitErrors) => (dispatch) => {
-  dispatch(stopSubmit(LoginUIActions.FORM_RESET_PASSWORD, submitErrors && submitErrors.errors))
+  dispatch(stopSubmit(FORM_RESET_PASSWORD, submitErrors && submitErrors.errors))
 }
 
 /*
@@ -658,7 +669,7 @@ export const onSubmitResetAccountPasswordFail = (errors, submitErrors) => (dispa
  * TODO: to rework it, merge into one action onSubmitPageFail
  */
 export const onSubmitWalletUploadFail = (errors, submitErrors) => (dispatch) => {
-  dispatch(stopSubmit(LoginUIActions.FORM_WALLET_UPLOAD, submitErrors && submitErrors.errors))
+  dispatch(stopSubmit(FORM_WALLET_UPLOAD, submitErrors && submitErrors.errors))
 }
 
 /*

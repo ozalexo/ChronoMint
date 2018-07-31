@@ -24,7 +24,8 @@ import { estimateGas } from '@chronobank/core/redux/tokens/actions'
 import { DUCK_TOKENS } from '@chronobank/core/redux/tokens/constants'
 import WalletModel from '@chronobank/core/models/wallet/WalletModel'
 import { BLOCKCHAIN_ETHEREUM } from '@chronobank/core/dao/constants'
-import SendTokensForm, { ACTION_APPROVE, ACTION_TRANSFER, FORM_SEND_TOKENS, MODE_ADVANCED, MODE_SIMPLE } from './SendTokensForm'
+import { FORM_SEND_TOKENS } from 'components/constants'
+import SendTokensForm, { ACTION_APPROVE, ACTION_TRANSFER, MODE_ADVANCED, MODE_SIMPLE } from './SendTokensForm'
 
 function mapStateToProps (state) {
   return {

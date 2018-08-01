@@ -30,6 +30,7 @@ export const FORM_CREATE_EXCHANGE = 'createExchangeForm'
 export const FORM_EXCHANGE_BUY_TOKENS = 'ExchangeTokensForm'
 
 export const FORM_EXCHANGE_DEPOSIT_FORM = 'ExchangeDepositForm'
+
 export const FORM_EXCHANGE_WITHDRAWAL_FORM = 'ExchangeWithdrawalForm'
 
 export const FORM_EXCHANGE = 'ExchangeForm'
@@ -51,5 +52,3 @@ export const FORM_2FA_ENABLE = 'Form2FAEnable'
 export const PROFILE_SIDE_PANEL_KEY = 'ProfileSidePanelKey'
 
 export const NOTIFICATION_SIDE_PANEL_KEY = 'NotificationSidePanelKey'
-
-export default {}

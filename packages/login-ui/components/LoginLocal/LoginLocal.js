@@ -27,8 +27,6 @@ import {
 } from '../../redux/thunks'
 import './LoginLocal.scss'
 
-export const FORM_LOGIN_TEST_RPC = 'FormLoginTestRPCPage'
-
 const mapDispatchToProps = (dispatch) => ({
   onSubmit: () => dispatch(onSubmitLoginTestRPC()),
   onSubmitFail: (errors, dispatch, submitErrors) => dispatch(onSubmitLoginTestRPCFail(errors, submitErrors)),

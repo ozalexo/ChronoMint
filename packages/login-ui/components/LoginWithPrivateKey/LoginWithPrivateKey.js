@@ -13,7 +13,7 @@ import { TextField } from 'redux-form-material-ui'
 import Button from 'components/common/ui/Button/Button'
 import {
   FORM_PRIVATE_KEY_LOGIN_PAGE,
-} from '../../redux/actions'
+} from '../../components/constants'
 import {
   onSubmitPrivateKeyLoginForm,
   onSubmitPrivateKeyLoginFormSuccess,

@@ -19,7 +19,7 @@ import {
 } from '../../redux/thunks'
 import {
   FORM_MNEMONIC_LOGIN_PAGE,
-} from '../../redux/actions'
+} from '../../components/constants'
 import validate from './validate'
 import './LoginWithMnemonic.scss'
 

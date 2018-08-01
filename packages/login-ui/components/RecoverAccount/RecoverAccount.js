@@ -27,9 +27,11 @@ import {
 import Button from 'components/common/ui/Button/Button'
 import UserRow from 'components/common/ui/UserRow/UserRow'
 import {
-  FORM_RECOVER_ACCOUNT,
   navigateToSelectWallet,
 } from '../../redux/actions'
+import {
+  FORM_RECOVER_ACCOUNT,
+} from '../../components/constants'
 import {
   onSubmitRecoverAccountForm,
   onSubmitRecoverAccountFormSuccess,

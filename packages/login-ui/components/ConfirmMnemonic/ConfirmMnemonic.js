@@ -15,8 +15,10 @@ import Button from 'components/common/ui/Button/Button'
 import { DUCK_NETWORK } from '@chronobank/login/redux/network/constants'
 import {
   navigateToConfirmMnemonicPage,
-  FORM_CONFIRM_MNEMONIC,
 } from '@chronobank/login-ui/redux/actions'
+import {
+  FORM_CONFIRM_MNEMONIC,
+} from '@chronobank/login-ui/components/constants'
 import {
   initConfirmMnemonicPage,
   onSubmitConfirmMnemonic,

@@ -26,7 +26,7 @@ import {
 } from '@chronobank/login/redux/network/thunks'
 import {
   FORM_RESET_PASSWORD,
-} from '../../redux/actions'
+} from '../../components/constants'
 import {
   onSubmitResetAccountPasswordSuccess,
   onSubmitResetAccountPasswordFail,

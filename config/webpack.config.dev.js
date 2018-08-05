@@ -3,6 +3,8 @@
  * Licensed under the AGPL Version 3 license.
  */
 
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+const CompileTimePlugin = require('webpack-compile-time-plugin')
 let path = require('path')
 let webpack = require('webpack')
 let babel = require('./babel.dev')
@@ -28,7 +30,8 @@ module.exports = config.buildConfig(
       // Next line is not used in dev but WebpackDevServer crashes without it:
       path: buildPath,
       pathinfo: true,
-      filename: 'bundle.js',
+      filename: '[name]-bundle.js',
+      chunkFilename: '[name]-chunk.js',
       publicPath: '/',
     },
     babel,
@@ -48,6 +51,18 @@ module.exports = config.buildConfig(
         PUBLIC_BACKEND_REST_URL: null, // will be used a default param in the code
       }),
       new webpack.HotModuleReplacementPlugin(),
+      new BundleAnalyzerPlugin({
+        analyzerMode: 'static',
+      }),
+      new webpack.optimize.CommonsChunkPlugin({
+        name: 'node-modules',
+        filename: 'node-modules.js',
+        minChunks (module) {
+          var context = module.context
+          return context && context.indexOf('node_modules') >= 0
+        },
+      }),
+      new CompileTimePlugin(),
     ],
   }),
 )

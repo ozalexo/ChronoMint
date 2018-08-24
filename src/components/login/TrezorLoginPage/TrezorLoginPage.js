@@ -7,9 +7,8 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
 import { onCreateWalletFromDevice } from '@chronobank/login-ui/redux/thunks'
-import { navigateToSelectWallet, navigateToSelectImportMethod, navigateToLoginPage, navigateBack } from '@chronobank/login-ui/redux/navigation'
+import { navigateToSelectWallet, navigateBack } from '@chronobank/login-ui/redux/navigation'
 import { LoginWithTrezorContainer, AccountNameContainer, DerivationPathFormContainer } from '@chronobank/login-ui/components'
-import { SubmissionError } from 'redux-form'
 import * as ProfileThunks from '@chronobank/core/redux/profile/thunks'
 import { getAddress } from '@chronobank/core/redux/persistAccount/utils'
 
@@ -33,6 +32,7 @@ class TrezorLoginPage extends PureComponent {
     getUserInfo: PropTypes.func,
     navigateBack: PropTypes.func,
     onCreateWalletFromDevice: PropTypes.func,
+    navigateToSelectWallet: PropTypes.func,
   }
 
   constructor (props) {
@@ -40,27 +40,10 @@ class TrezorLoginPage extends PureComponent {
 
     this.state = {
       page: TrezorLoginPage.PAGES.DEVICE_SELECT_FORM,
-      walletJSON: null,
     }
   }
 
-  getCurrentPage () {
-    switch (this.state.page) {
-      case TrezorLoginPage.PAGES.DEVICE_SELECT_FORM:
-        return <LoginWithTrezorContainer previousPage={this.previousPage.bind(this)} onDeviceSelect={this.onSubmitDevice.bind(this)} navigateToDerivationPathForm={this.navigateToDerivationPathForm.bind(this)} />
-
-      case TrezorLoginPage.PAGES.ACCOUNT_NAME_FORM:
-        return <AccountNameContainer previousPage={this.previousPage.bind(this)} onSubmit={this.onSubmitAccountName.bind(this)} />
-
-      case TrezorLoginPage.PAGES.DERIVATION_PATH_FORM:
-        return <DerivationPathFormContainer previousPage={this.navigateToDeviceSelectForm.bind(this)} onSubmit={this.onSubmitDerivationPath.bind(this)} />
-
-      default:
-        return <LoginWithTrezorContainer previousPage={this.previousPage.bind(this)} onDeviceSelect={this.onSubmitDevice.bind(this)} />
-    }
-  }
-
-  async onSubmitDevice (device) {
+  handleSubmitDevice = async (device) => {
     this.setState({
       device: device,
     })
@@ -91,32 +74,69 @@ class TrezorLoginPage extends PureComponent {
     }
   }
 
-  async onSubmitAccountName (accountName) {
+  handleSubmitAccountName = (accountName) => {
     const { onCreateWalletFromDevice, navigateToSelectWallet } = this.props
 
     onCreateWalletFromDevice(accountName, this.state.device, null)
     navigateToSelectWallet()
   }
 
-  async onSubmitDerivationPath ({ path }) {
+  handleSubmitDerivationPath = () => {
     this.setState({
       page: TrezorLoginPage.PAGES.DEVICE_SELECT_FORM,
     })
   }
 
-  navigateToDerivationPathForm () {
+  getCurrentPage = () => {
+    switch (this.state.page) {
+      case TrezorLoginPage.PAGES.DEVICE_SELECT_FORM:
+        return (
+          <LoginWithTrezorContainer
+            previousPage={this.previousPage}
+            onDeviceSelect={this.handleSubmitDevice}
+            navigateToDerivationPathForm={this.navigateToDerivationPathForm}
+          />
+        )
+
+      case TrezorLoginPage.PAGES.ACCOUNT_NAME_FORM:
+        return (
+          <AccountNameContainer
+            previousPage={this.previousPage}
+            onSubmit={this.handleSubmitAccountName}
+          />
+        )
+
+      case TrezorLoginPage.PAGES.DERIVATION_PATH_FORM:
+        return (
+          <DerivationPathFormContainer
+            previousPage={this.navigateToDeviceSelectForm}
+            onSubmit={this.handleSubmitDerivationPath}
+          />
+        )
+
+      default:
+        return (
+          <LoginWithTrezorContainer
+            previousPage={this.previousPage}
+            onDeviceSelect={this.handleSubmitDevice}
+          />
+        )
+    }
+  }
+
+  navigateToDerivationPathForm = () => {
     this.setState({
       page: TrezorLoginPage.PAGES.DERIVATION_PATH_FORM,
     })
   }
 
-  navigateToDeviceSelectForm () {
+  navigateToDeviceSelectForm = () => {
     this.setState({
       page: TrezorLoginPage.PAGES.DEVICE_SELECT_FORM,
     })
   }
 
-  previousPage () {
+  previousPage = () => {
     if (this.state.page === TrezorLoginPage.PAGES.DEVICE_SELECT_FORM) {
       this.props.navigateBack()
     } else {

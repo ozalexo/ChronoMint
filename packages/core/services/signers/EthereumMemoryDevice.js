@@ -26,29 +26,31 @@ export default class EthereumMemoryDevice extends EventEmitter {
   }
 
   getPrivateKey (path) {
-    if(!path || path == DEFAULT_PATH) {
+    if (!path || path == DEFAULT_PATH) {
       return this.wallet.privateKey
     }
-      return EthereumMemoryDevice.getDerivedWallet(this.wallet.privateKey, path).address
+    return EthereumMemoryDevice.getDerivedWallet(this.wallet.privateKey, path).address
   }
 
   // this method is a part of base interface
   getAddress (path) {
-    if(!path || path == DEFAULT_PATH) {
+    if (!path || path == DEFAULT_PATH) {
       return this.address
     }
     return EthereumMemoryDevice.getDerivedWallet(this.wallet.privateKey, path).address
   }
 
-  async signTransaction (tx, path) { // tx object
-    if(!path || path == DEFAULT_PATH) {
+  async signTransaction (tx, path) {
+    // tx object
+    if (!path || path == DEFAULT_PATH) {
       return this.wallet.signTransaction(tx)
     }
     return EthereumMemoryDevice.getDerivedWallet(this.wallet.privateKey, path).signTransaction(tx)
   }
 
-  async signData (data, path) { // data object
-    if(!path || path == DEFAULT_PATH) {
+  async signData (data, path) {
+    // data object
+    if (!path || path == DEFAULT_PATH) {
       return this.wallet.sign(data)
     }
     return EthereumMemoryDevice.getDerivedWallet(this.wallet.privateKey, path).sign(data)
@@ -64,7 +66,7 @@ export default class EthereumMemoryDevice extends EventEmitter {
       wallet = wallet[0]
     }
     if (mnemonic) {
-      wallet = EthereumMemoryDevice.getDerivedWallet(mnemonic,null)
+      wallet = EthereumMemoryDevice.getDerivedWallet(mnemonic, null)
     }
     return { wallet: wallet.encrypt(password), path: DEFAULT_PATH, type: 'memory', address: wallet.address }
   }
@@ -79,7 +81,7 @@ export default class EthereumMemoryDevice extends EventEmitter {
 
   static getDerivedWallet (seed, path) {
     let _path
-    if(!path) {
+    if (!path) {
       _path = DEFAULT_PATH
     } else {
       _path = path
@@ -92,5 +94,4 @@ export default class EthereumMemoryDevice extends EventEmitter {
     wallet.add(account)
     return wallet[0]
   }
-
 }

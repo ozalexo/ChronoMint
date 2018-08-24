@@ -45,7 +45,7 @@ export const deviceUpdateList = (deviceList) => (dispatch) => {
 }
 
 export const deviceSetStatus = (deviceStatus) => (dispatch) => {
-  dispatch({ type: DEVICE_SET_STATUS, deviceStatus})
+  dispatch({ type: DEVICE_SET_STATUS, deviceStatus })
 }
 
 export const initLedgerDevice = (wallet) => async (dispatch, getState) => {
@@ -70,6 +70,5 @@ export const loadDeviceAccount = (entry) => async (dispatch) => {
 }
 
 export const deviceNextPage = () => (dispatch, getState) => {
-
-
+  // TODO
 }

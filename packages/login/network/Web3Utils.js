@@ -3,13 +3,12 @@
  * Licensed under the AGPL Version 3 license.
  */
 
-
 export default class Web3Utils {
   static createEngine (wallet, providerUrl, deriveNumber) {
-    return 
+    return
   }
 
   static createStatusEngine (providerUrl) {
-	  //TODO
+    //TODO
   }
 }

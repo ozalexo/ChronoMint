@@ -6,20 +6,9 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
-import {
-  onCreateWalletFromDevice,
-} from '@chronobank/login-ui/redux/thunks'
-import {
-  navigateToSelectWallet,
-  navigateToSelectImportMethod,
-  navigateToLoginPage,
-  navigateBack,
-} from '@chronobank/login-ui/redux/navigation'
-import {
-  LoginWithLedgerContainer,
-  AccountNameContainer,
-  DerivationPathFormContainer,
-} from '@chronobank/login-ui/components'
+import { onCreateWalletFromDevice } from '@chronobank/login-ui/redux/thunks'
+import { navigateToSelectWallet, navigateToSelectImportMethod, navigateToLoginPage, navigateBack } from '@chronobank/login-ui/redux/navigation'
+import { LoginWithLedgerContainer, AccountNameContainer, DerivationPathFormContainer } from '@chronobank/login-ui/components'
 import { SubmissionError } from 'redux-form'
 import * as ProfileThunks from '@chronobank/core/redux/profile/thunks'
 import { getAddress } from '@chronobank/core/redux/persistAccount/utils'
@@ -57,48 +46,29 @@ class LedgerLoginPage extends PureComponent {
   }
 
   getCurrentPage () {
-    switch(this.state.page){
+    switch (this.state.page) {
       case LedgerLoginPage.PAGES.DEVICE_SELECT_FORM:
-        return (
-          <LoginWithLedgerContainer
-            previousPage={this.previousPage.bind(this)}
-            onDeviceSelect={this.onSubmitDevice.bind(this)}
-            navigateToDerivationPathForm={this.navigateToDerivationPathForm.bind(this)}
-          />
-        )
+        return <LoginWithLedgerContainer previousPage={this.previousPage.bind(this)} onDeviceSelect={this.onSubmitDevice.bind(this)} navigateToDerivationPathForm={this.navigateToDerivationPathForm.bind(this)} />
 
       case LedgerLoginPage.PAGES.ACCOUNT_NAME_FORM:
-        return (
-          <AccountNameContainer
-            previousPage={this.previousPage.bind(this)}
-            onSubmit={this.onSubmitAccountName.bind(this)}
-          />
-        )
+        return <AccountNameContainer previousPage={this.previousPage.bind(this)} onSubmit={this.onSubmitAccountName.bind(this)} />
 
       case LedgerLoginPage.PAGES.DERIVATION_PATH_FORM:
-        return (
-          <DerivationPathFormContainer
-            previousPage={this.navigateToDeviceSelectForm.bind(this)}
-            onSubmit={this.onSubmitDerivationPath.bind(this)}
-          />
-        )
+        return <DerivationPathFormContainer previousPage={this.navigateToDeviceSelectForm.bind(this)} onSubmit={this.onSubmitDerivationPath.bind(this)} />
 
       default:
-        return (
-          <LoginWithLedgerContainer
-            previousPage={this.previousPage.bind(this)}
-            onDeviceSelect={this.onSubmitDevice.bind(this)}
-          />
-        )
+        return <LoginWithLedgerContainer previousPage={this.previousPage.bind(this)} onDeviceSelect={this.onSubmitDevice.bind(this)} />
     }
   }
 
   async onSubmitDevice (device) {
     this.setState({
-	    device: device
+      device: device,
     })
 
-    let response = null, userName = null, profile = null
+    let response = null,
+      userName = null,
+      profile = null
 
     // If profile has been got && profile does exist && userName != null then create wallet
     try {
@@ -107,7 +77,7 @@ class LedgerLoginPage extends PureComponent {
       profile = response.data[0]
       userName = profile.userName
 
-      if (userName){
+      if (userName) {
         this.props.onCreateWalletFromDevice(userName, device, profile)
         this.props.navigateToSelectWallet()
       } else {
@@ -115,7 +85,6 @@ class LedgerLoginPage extends PureComponent {
           page: LedgerLoginPage.PAGES.ACCOUNT_NAME_FORM,
         })
       }
-
     } catch (e) {
       this.setState({
         page: LedgerLoginPage.PAGES.ACCOUNT_NAME_FORM,
@@ -132,13 +101,13 @@ class LedgerLoginPage extends PureComponent {
 
   async onSubmitDerivationPath ({ path }) {
     this.setState({
-      page: LedgerLoginPage.PAGES.DEVICE_SELECT_FORM
+      page: LedgerLoginPage.PAGES.DEVICE_SELECT_FORM,
     })
   }
 
   navigateToDerivationPathForm () {
     this.setState({
-      page: LedgerLoginPage.PAGES.DERIVATION_PATH_FORM
+      page: LedgerLoginPage.PAGES.DERIVATION_PATH_FORM,
     })
   }
 
@@ -149,17 +118,19 @@ class LedgerLoginPage extends PureComponent {
   }
 
   previousPage () {
-    if (this.state.page === LedgerLoginPage.PAGES.DEVICE_SELECT_FORM){
+    if (this.state.page === LedgerLoginPage.PAGES.DEVICE_SELECT_FORM) {
       this.props.navigateBack()
     } else {
-      this.setState ({ page: this.state.page - 1 })
+      this.setState({ page: this.state.page - 1 })
     }
   }
 
   render () {
-
     return this.getCurrentPage()
   }
 }
 
-export default connect(null, mapDispatchToProps)(LedgerLoginPage)
+export default connect(
+  null,
+  mapDispatchToProps
+)(LedgerLoginPage)

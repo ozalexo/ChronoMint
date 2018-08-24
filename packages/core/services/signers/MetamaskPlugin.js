@@ -28,8 +28,8 @@ export default class MetamaskPlugin extends EventEmitter {
   async getAddressInfoList () {
     if (this.isConnected) {
       const accounts = await this.web3.eth.getAccounts()
-      return accounts.map(address => ({
-        address
+      return accounts.map((address) => ({
+        address,
       }))
     }
     return []
@@ -37,7 +37,7 @@ export default class MetamaskPlugin extends EventEmitter {
 
   async signTransaction (address, { gas, gasPrice, ...txData }) {
     const signed = await this.web3.eth.sendTransaction({
-      ...txData
+      ...txData,
     })
     return signed
   }
@@ -45,7 +45,7 @@ export default class MetamaskPlugin extends EventEmitter {
   async signData (address, data) {
     const signature = await this.web3.eth.personal.sign(data, address)
     return {
-      signature
+      signature,
     }
   }
 }

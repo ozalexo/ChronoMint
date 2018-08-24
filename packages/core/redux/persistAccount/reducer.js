@@ -13,7 +13,6 @@ const persistConfig = {
   blacklist: ['decryptedWallet', 'rehydrated'],
 }
 
-
 const initialState = {
   walletsList: [],
   selectedWallet: null,

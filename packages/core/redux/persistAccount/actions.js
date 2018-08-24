@@ -67,7 +67,7 @@ export const accountUpdate = (wallet) => (dispatch, getState) => {
 }
 
 export const decryptAccount = (entry, password) => async (dispatch) => {
-  const privateKey = EthereumMemoryDevice.decrypt({entry:entry.encrypted[0].wallet, password })
+  const privateKey = EthereumMemoryDevice.decrypt({ entry:entry.encrypted[0].wallet, password })
 //  const btcSigner = await BitcoinLedgerDevice.init({ seed: signer.wallet.privateKey })
  // const address = await btcSigner.getAddress("m/44'/1'/0'/0/0")
  // console.log(address)
@@ -80,12 +80,9 @@ export const decryptAccount = (entry, password) => async (dispatch) => {
     privateKey,
   })
 
-
   dispatch(accountLoad(account))
 
   return account
-
-
 }
 
 export const validateAccountName = (name) => (dispatch, getState) => {
@@ -128,9 +125,9 @@ export const createAccount = ({ name, wallet, type }) => async (dispatch) => {
 
 }
 
-export const createMemoryAccount = ({name, password, mnemonic, privateKey}) => async (dispatch) => {
+export const createMemoryAccount = ({ name, password, mnemonic, privateKey }) => async (dispatch) => {
   const wallet = await EthereumMemoryDevice.create({ privateKey, mnemonic, password })
-  const account = await dispatch(createAccount({name, wallet, type: 'memory'}))
+  const account = await dispatch(createAccount({ name, wallet, type: 'memory' }))
   return account
 
 }

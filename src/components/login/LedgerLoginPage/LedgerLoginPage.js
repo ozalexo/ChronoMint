@@ -7,9 +7,8 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
 import { onCreateWalletFromDevice } from '@chronobank/login-ui/redux/thunks'
-import { navigateToSelectWallet, navigateToSelectImportMethod, navigateToLoginPage, navigateBack } from '@chronobank/login-ui/redux/navigation'
+import { navigateToSelectWallet, navigateBack } from '@chronobank/login-ui/redux/navigation'
 import { LoginWithLedgerContainer, AccountNameContainer, DerivationPathFormContainer } from '@chronobank/login-ui/components'
-import { SubmissionError } from 'redux-form'
 import * as ProfileThunks from '@chronobank/core/redux/profile/thunks'
 import { getAddress } from '@chronobank/core/redux/persistAccount/utils'
 
@@ -41,27 +40,10 @@ class LedgerLoginPage extends PureComponent {
 
     this.state = {
       page: LedgerLoginPage.PAGES.DEVICE_SELECT_FORM,
-      walletJSON: null,
     }
   }
 
-  getCurrentPage () {
-    switch (this.state.page) {
-      case LedgerLoginPage.PAGES.DEVICE_SELECT_FORM:
-        return <LoginWithLedgerContainer previousPage={this.previousPage.bind(this)} onDeviceSelect={this.onSubmitDevice.bind(this)} navigateToDerivationPathForm={this.navigateToDerivationPathForm.bind(this)} />
-
-      case LedgerLoginPage.PAGES.ACCOUNT_NAME_FORM:
-        return <AccountNameContainer previousPage={this.previousPage.bind(this)} onSubmit={this.onSubmitAccountName.bind(this)} />
-
-      case LedgerLoginPage.PAGES.DERIVATION_PATH_FORM:
-        return <DerivationPathFormContainer previousPage={this.navigateToDeviceSelectForm.bind(this)} onSubmit={this.onSubmitDerivationPath.bind(this)} />
-
-      default:
-        return <LoginWithLedgerContainer previousPage={this.previousPage.bind(this)} onDeviceSelect={this.onSubmitDevice.bind(this)} />
-    }
-  }
-
-  async onSubmitDevice (device) {
+  handleSubmitDevice = async (device) => {
     this.setState({
       device: device,
     })
@@ -92,32 +74,69 @@ class LedgerLoginPage extends PureComponent {
     }
   }
 
-  async onSubmitAccountName (accountName) {
+  handleSubmitAccountName = (accountName) => {
     const { onCreateWalletFromDevice, navigateToSelectWallet } = this.props
 
     onCreateWalletFromDevice(accountName, this.state.device, null)
     navigateToSelectWallet()
   }
 
-  async onSubmitDerivationPath ({ path }) {
+  handleSubmitDerivationPath = () => {
     this.setState({
       page: LedgerLoginPage.PAGES.DEVICE_SELECT_FORM,
     })
   }
 
-  navigateToDerivationPathForm () {
+  getCurrentPage = () => {
+    switch (this.state.page) {
+      case LedgerLoginPage.PAGES.DEVICE_SELECT_FORM:
+        return (
+          <LoginWithLedgerContainer
+            previousPage={this.previousPage}
+            onDeviceSelect={this.handleSubmitDevice}
+            navigateToDerivationPathForm={this.navigateToDerivationPathForm}
+          />
+        )
+
+      case LedgerLoginPage.PAGES.ACCOUNT_NAME_FORM:
+        return (
+          <AccountNameContainer
+            previousPage={this.previousPage}
+            onSubmit={this.handleSubmitAccountName}
+          />
+        )
+
+      case LedgerLoginPage.PAGES.DERIVATION_PATH_FORM:
+        return (
+          <DerivationPathFormContainer
+            previousPage={this.navigateToDeviceSelectForm}
+            onSubmit={this.handleSubmitDerivationPath}
+          />
+        )
+
+      default:
+        return (
+          <LoginWithLedgerContainer
+            previousPage={this.previousPage}
+            onDeviceSelect={this.handleSubmitDevice}
+          />
+        )
+    }
+  }
+
+  navigateToDerivationPathForm = () => {
     this.setState({
       page: LedgerLoginPage.PAGES.DERIVATION_PATH_FORM,
     })
   }
 
-  navigateToDeviceSelectForm () {
+  navigateToDeviceSelectForm = () => {
     this.setState({
       page: LedgerLoginPage.PAGES.DEVICE_SELECT_FORM,
     })
   }
 
-  previousPage () {
+  previousPage = () => {
     if (this.state.page === LedgerLoginPage.PAGES.DEVICE_SELECT_FORM) {
       this.props.navigateBack()
     } else {

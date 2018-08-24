@@ -5,44 +5,18 @@
 
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
 import { Translate } from 'react-redux-i18n'
-import {
-  DUCK_DEVICE_ACCOUNT,
-} from '@chronobank/core/redux/device/constants'
-
 import './LoginWithTrezor.scss'
 
-class LoginTrezor extends Component {
+export default class LoginTrezor extends Component {
   static propTypes = {
     previousPage: PropTypes.func,
-    isLoading: PropTypes.bool,
     deviceList: PropTypes.instanceOf(Array),
     onDeviceSelect: PropTypes.func,
     navigateToDerivationPathForm: PropTypes.func,
   }
 
-  componentDidUpdate (prevProps) {
-    //if (!this.props.trezor.isFetched && !this.props.trezor.isFetching) {
-    //  this.props.fetchAccount()
-    //}
-  }
-
-  componentWillUnmount () {
-  }
-
-  renderStates () {
-    return (
-      <div styleName='state' key='1'>
-        <div styleName='titleContent'>
-          <div styleName='title'>zzz</div>
-          <div styleName='subtitle'>zzz</div>
-        </div>
-      </div>
-    )
-  }
-
-  _buildItem = (item, i) => {
+  buildItem = (item, i) => {
     return (
       <div
         key={i}
@@ -65,8 +39,19 @@ class LoginTrezor extends Component {
     )
   }
 
+  renderStates () {
+    return (
+      <div styleName='state' key='1'>
+        <div styleName='titleContent'>
+          <div styleName='title'>zzz</div>
+          <div styleName='subtitle'>zzz</div>
+        </div>
+      </div>
+    )
+  }
+
   render () {
-    const { previousPage, deviceList, isLoading, navigateToDerivationPathForm } = this.props
+    const { previousPage, deviceList, navigateToDerivationPathForm } = this.props
     return (
       <div styleName='form'>
         <div styleName='page-title'>
@@ -79,11 +64,10 @@ class LoginTrezor extends Component {
             </div>
           )
         }
-
         {
-          deviceList.length && (
+          deviceList.length > 0 && (
             <div styleName='account'>
-              {deviceList.map(this._buildItem)}
+              {deviceList.map(this.buildItem)}
             </div>
           )
         }
@@ -105,5 +89,3 @@ class LoginTrezor extends Component {
     )
   }
 }
-
-export default LoginTrezor

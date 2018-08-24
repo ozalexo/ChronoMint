@@ -56,10 +56,8 @@ export const initWallets = () => (dispatch) => {
 }
 
 const initWalletsFromKeys = () => (dispatch, getState) => {
-  console.log('Init wallets from keys')
   const state = getState()
   const account = getPersistAccount(state)
-  console.log(account)
 
     const wallet = new WalletModel({
       address: account.decryptedWallet.entry.encrypted[0].address,

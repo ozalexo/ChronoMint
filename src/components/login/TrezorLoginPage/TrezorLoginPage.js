@@ -93,8 +93,6 @@ class TrezorLoginPage extends PureComponent {
   }
 
   async onSubmitDevice (device) {
-    console.log('submit device')
-    console.log(device)
     this.setState({
 	    device: device
     })
@@ -132,7 +130,6 @@ class TrezorLoginPage extends PureComponent {
   }
 
   async onSubmitDerivationPath ({ path }) {
-    console.log('path', path)
     this.setState({
       page: TrezorLoginPage.PAGES.DEVICE_SELECT_FORM
     })

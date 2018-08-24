@@ -55,8 +55,6 @@ export const accountUpdate = (wallet) => (dispatch, getState) => {
   const state = getState()
 
   const { walletsList } = state.get(DUCK_PERSIST_ACCOUNT)
-  console.log('walletsList')
-  console.log(walletsList)
 
   const index = walletsList.findIndex((item) => item.key === wallet.key)
 
@@ -69,12 +67,10 @@ export const accountUpdate = (wallet) => (dispatch, getState) => {
 }
 
 export const decryptAccount = (entry, password) => async (dispatch) => {
-  console.log(entry)
   const privateKey = EthereumMemoryDevice.decrypt({entry:entry.encrypted[0].wallet, password })
-  console.log(privateKey)
 //  const btcSigner = await BitcoinLedgerDevice.init({ seed: signer.wallet.privateKey })
  // const address = await btcSigner.getAddress("m/44'/1'/0'/0/0")
- // console.log(address) 
+ // console.log(address)
  // const address2 = await btcSigner.getAddress("m/44'/1'/0'/0/1")
  // console.log(address2)
  // console.log(btcSigner)
@@ -83,7 +79,7 @@ export const decryptAccount = (entry, password) => async (dispatch) => {
     entry,
     privateKey,
   })
-  
+
 
   dispatch(accountLoad(account))
 
@@ -127,19 +123,14 @@ export const createAccount = ({ name, wallet, type }) => async (dispatch) => {
     profile: null,
   })
 
-  console.log(entry)
   const newAccounts = await dispatch(setProfilesForAccounts([entry]))
-  console.log(newAccounts)
   return newAccounts[0] || entry
 
 }
 
 export const createMemoryAccount = ({name, password, mnemonic, privateKey}) => async (dispatch) => {
   const wallet = await EthereumMemoryDevice.create({ privateKey, mnemonic, password })
-  console.log('create account')
-  console.log(wallet)
   const account = await dispatch(createAccount({name, wallet, type: 'memory'}))
-  console.log(account)
   return account
 
 }

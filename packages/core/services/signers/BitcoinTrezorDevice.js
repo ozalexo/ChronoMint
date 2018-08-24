@@ -18,7 +18,7 @@ export default class BitcoinTrezorDevice extends EventEmitter {
   }
 
   privateKey (path) {
-    return this._getDerivedWallet(path).privateKey 
+    return this._getDerivedWallet(path).privateKey
   }
 
   // this method is a part of base interface
@@ -27,7 +27,6 @@ export default class BitcoinTrezorDevice extends EventEmitter {
     path: path,
     showOnTrezor: false,
 });
-    console.log(result)
   return result.payload.address
   }
 
@@ -61,8 +60,6 @@ const LEDGER_ADDRESS = 'mtnCZ2WsxjDqDzLn8EJTkQVugnbBanAhRz'
   }]
 
   const { inputs, outputs, fee } = coinselect(utxos, targets, feeRate)
-  console.log(inputs)
-  console.log(outputs)
   const txb = new bitcoin.TransactionBuilder(network)
   inputs.forEach(input => txb.addInput(input.txId, input.vout))
   outputs.forEach(output => {
@@ -74,7 +71,6 @@ const LEDGER_ADDRESS = 'mtnCZ2WsxjDqDzLn8EJTkQVugnbBanAhRz'
 
     txb.addOutput(output.address, output.value)
   })
-  console.log(txb.buildIncomplete().toHex())
 
   const result =  await TrezorConnect.signTransaction({
     inputs: [
@@ -94,11 +90,10 @@ const LEDGER_ADDRESS = 'mtnCZ2WsxjDqDzLn8EJTkQVugnbBanAhRz'
             address_n: [44 | 0x80000000, 1 | 0x80000000, 0 | 0x80000000, 0, 0],
             amount: '855000',
             script_type: 'PAYTOADDRESS'
-        }, 
+        },
     ],
     coin: "Testnet"
 })
-   console.log(result)  
 
   }
 
@@ -107,18 +102,17 @@ const LEDGER_ADDRESS = 'mtnCZ2WsxjDqDzLn8EJTkQVugnbBanAhRz'
   }
 
   static async init ({ seed, network }) {
-    //todo add network selector 
-    
+    //todo add network selector
+
     return new BitcoinTrezorDevice({seed})
 
-    } 
+    }
 
   _getDerivedWallet(derivedPath) {
     if(this.seed) {
       const wallet = bitcoin.HDNode
         .fromSeedBuffer(Buffer.from(this.seed.substring(2), 'hex'), bitcoin.networks.testnet)
         .derivePath(derivedPath)
-      console.log(wallet)
       return wallet
     }
   }

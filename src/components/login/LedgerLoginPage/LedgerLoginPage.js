@@ -94,8 +94,6 @@ class LedgerLoginPage extends PureComponent {
   }
 
   async onSubmitDevice (device) {
-    console.log('submit device')
-    console.log(device)
     this.setState({
 	    device: device
     })
@@ -133,7 +131,6 @@ class LedgerLoginPage extends PureComponent {
   }
 
   async onSubmitDerivationPath ({ path }) {
-    console.log('path', path)
     this.setState({
       page: LedgerLoginPage.PAGES.DEVICE_SELECT_FORM
     })

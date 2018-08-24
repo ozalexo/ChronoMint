@@ -17,7 +17,7 @@ export default class BitcoinMemoryDevice extends EventEmitter {
   }
 
   privateKey (path) {
-    return this._getDerivedWallet(path).privateKey 
+    return this._getDerivedWallet(path).privateKey
   }
 
   // this method is a part of base interface
@@ -73,8 +73,7 @@ const LEDGER_ADDRESS = 'mtnCZ2WsxjDqDzLn8EJTkQVugnbBanAhRz'
   // sign by platform key and 1 from secret key
   txb.sign(0, this._getDerivedWallet(path).keyPair)
   const tx = txb.build()
-  console.log(tx.toHex());
-  
+
 
   }
 
@@ -83,18 +82,17 @@ const LEDGER_ADDRESS = 'mtnCZ2WsxjDqDzLn8EJTkQVugnbBanAhRz'
   }
 
   static async init ({ seed, network }) {
-    //todo add network selector 
-    
+    //todo add network selector
+
     return new BitcoinMemoryDevice({seed})
 
-    } 
+    }
 
   _getDerivedWallet(derivedPath) {
     if(this.seed) {
       const wallet = bitcoin.HDNode
         .fromSeedBuffer(Buffer.from(this.seed.substring(2), 'hex'), bitcoin.networks.testnet)
         .derivePath(derivedPath)
-      console.log(wallet)
       return wallet
     }
   }

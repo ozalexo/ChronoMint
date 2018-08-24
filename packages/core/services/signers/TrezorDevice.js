@@ -24,13 +24,12 @@ export default class TrezorDevice extends EventEmitter {
       const wallet = hdKey.derivePath(path).getWallet()
       return `0x${wallet.getAddress().toString('hex')}`
     }
-    return 
+    return
   }
 
   async getAddressInfoList (from: Number = 0, limit: Number = 5): String {
         if (!this.xpubkey) {
 	  const result = await TrezorConnect.getPublicKey({ path: DEFAULT_PATH });
-          console.log(result)
           const { xpub } = result.payload
           this.xpubkey = xpub
         }
@@ -68,7 +67,6 @@ export default class TrezorDevice extends EventEmitter {
               : Web3Utils.toBN(txData.nonce)
           }, isNil)
         })
-        console.log(txData.value.toString(16))
         const chainId = txData.chainId
         const response =  await TrezorConnect.ethereumSignTransaction({
           path: path,
@@ -79,10 +77,9 @@ export default class TrezorDevice extends EventEmitter {
                          value: txData.value.toString(16),
                          data: txData.data == null ? "" : txData.data,
                          chainId: chainId, }})
-	    console.log(response)
             if (response.success) {
               // Store signature in transaction
-              tx.v = response.payload.v 
+              tx.v = response.payload.v
               tx.r = response.payload.r
               tx.s = response.payload.s
 
@@ -94,8 +91,6 @@ export default class TrezorDevice extends EventEmitter {
 
               // Return the signed raw transaction
               const rawTx = '0x' + tx.serialize().toString('hex')
-	      console.log('rawTx')
-	      console.log(rawTx)
               return {
                 rawTransaction: rawTx
 	      }
@@ -103,12 +98,10 @@ export default class TrezorDevice extends EventEmitter {
   }
 
   async signData (data, path) {
-	console.log(data)
         const response =  await TrezorConnect.ethereumSignMessage({path: path, message: Buffer.from(data).toString('hex')})
-          console.log(response)
           if (response.success) {
-	    return {	  
-              signature: `0x${response.payload.signature}` 
+	    return {
+              signature: `0x${response.payload.signature}`
             }
           }
   }

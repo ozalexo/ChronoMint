@@ -20,7 +20,7 @@ export default class BitcoinLedgerDevice extends EventEmitter {
   }
 
   privateKey (path) {
-    return this._getDerivedWallet(path).privateKey 
+    return this._getDerivedWallet(path).privateKey
   }
 
   // this method is a part of base interface
@@ -28,8 +28,7 @@ export default class BitcoinLedgerDevice extends EventEmitter {
           const transport = await TransportU2F.create()
           const app = new AppBtc(transport)
 	  const result = await app.getWalletPublicKey(path)
-	  console.log(result)
-          return result.bitcoinAddress	  
+          return result.bitcoinAddress
   }
 
   async buildTx(path) {
@@ -49,7 +48,6 @@ const FROM_ADDRESS = 'mtnCZ2WsxjDqDzLn8EJTkQVugnbBanAhRz'
 
   // ----------------------------------spend from multisig---------------------------
   const { data: utxosBE } = await BLOCK_EXPLORER.get(`/api/addr/${FROM_ADDRESS}/utxo`)
-  console.log(utxosBE)
 
   const utxos = utxosBE.map(e => ({
     ...e,
@@ -60,7 +58,6 @@ const FROM_ADDRESS = 'mtnCZ2WsxjDqDzLn8EJTkQVugnbBanAhRz'
   }))
 
 
-  console.log(utxos)
 
   const targets = [{
       address: MEMORY_ADDRESS,
@@ -68,7 +65,6 @@ const FROM_ADDRESS = 'mtnCZ2WsxjDqDzLn8EJTkQVugnbBanAhRz'
   }]
 
   const { inputs, outputs, fee } = coinselect(utxos, targets, feeRate)
-  console.log(inputs)
   const txb = new bitcoin.TransactionBuilder(network)
   txb.setVersion(1)
   inputs.forEach(input => txb.addInput(input.txId, input.vout))
@@ -86,25 +82,17 @@ const FROM_ADDRESS = 'mtnCZ2WsxjDqDzLn8EJTkQVugnbBanAhRz'
   .to(MEMORY_ADDRESS, VALUE)
   .change('mutCF8MJqHWCYfRwnSEs1BihL5f1ZZUGnA')
   .fee(200)
-
-  console.log(txb)
-  console.log(transaction)
           const transport = await TransportU2F.create()
           const app = new AppBtc(transport)
-  console.log(txb.buildIncomplete().toHex())
-  console.log(transaction.uncheckedSerialize())
   //const tx1 = await app.splitTransaction(txb.buildIncomplete().toHex())
   const tx1 = await app.splitTransaction(transaction.uncheckedSerialize())
-  console.log(tx1)
   const script = await app.serializeTransactionOutputs(tx1).toString('hex')
-  console.log(script)
   const result = await app.createPaymentTransactionNew(
 [ [tx1, 0] ],
 [path],
 undefined,
 script
 )
-  console.log(result)
 
   }
 
@@ -113,18 +101,17 @@ script
   }
 
   static async init ({ seed, network }) {
-    //todo add network selector 
-    
+    //todo add network selector
+
     return new BitcoinLedgerDevice({seed})
 
-    } 
+    }
 
   _getDerivedWallet(derivedPath) {
     if(this.seed) {
       const wallet = bitcoin.HDNode
         .fromSeedBuffer(Buffer.from(this.seed.substring(2), 'hex'), bitcoin.networks.testnet)
         .derivePath(derivedPath)
-      console.log(wallet)
       return wallet
     }
   }

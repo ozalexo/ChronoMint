@@ -19,7 +19,6 @@ export const getPersistAccount = (state) => {
 
 export const getSigner = (state) => {
   const account = getPersistAccount(state)
-  console.log(account)
   switch (account.selectedWallet.encrypted[0].type) {
     case 'trezor_mock': {
       return new TrezorDeviceMock()
@@ -46,7 +45,7 @@ export const getBtcSigner = (state) => {
       return new BitcoinTrezorDeviceMock()
     }
   }
-}  
+}
 
 export const getSelectedNetwork = () => createSelector(
   (state) => state.get(DUCK_NETWORK),

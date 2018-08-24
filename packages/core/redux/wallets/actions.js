@@ -51,18 +51,15 @@ export const initWallets = () => (dispatch) => {
 }
 
 const initWalletsFromKeys = () => (dispatch, getState) => {
-  console.log('Init wallets from keys')
   const state = getState()
   const account = getPersistAccount(state)
-  console.log(account)
 
     const wallet = new WalletModel({
       address: account.decryptedWallet.entry.encrypted[0].address,
       blockchain: 'Ethereum',
       isMain: true,
-      walletDerivedPath: account.decryptedWallet.entry.encrypted[0].path 
+      walletDerivedPath: account.decryptedWallet.entry.encrypted[0].path
     })
-    console.log(wallet)
     dispatch(setWallet(wallet))
     dispatch(updateWalletBalance({ wallet }))
 }
@@ -168,7 +165,6 @@ export const mainTransfer = (wallet: WalletModel, token: TokenModel, amount: Amo
   const tx = tokenDAO.transfer(wallet.address, recipient, amount, token) // added token for btc like transfers
 
   if (tx) {
-    console.log(wallet)
     await dispatch(executeTransaction({ tx, options: { feeMultiplier, walletDerivedPath: wallet.walletDerivedPath } }))
   }
 }

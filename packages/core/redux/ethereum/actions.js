@@ -90,10 +90,7 @@ export const processTransaction = ({ web3, entry, signer }) => async (dispatch, 
 }
 
 export const signTransaction = ({ entry, signer }) => async (dispatch) => {
-  console.log('sign Transaction')
-  console.log(entry)
   try {
-    console.log(entry.walletDerivedPath)
     const signed = await signer.signTransaction(omitBy(entry.tx, isNil), entry.walletDerivedPath)
     const raw = signed.rawTransaction
     dispatch({
@@ -210,7 +207,6 @@ const acceptTransaction = (entry) => async (dispatch, getState) => {
   })
   const state = getState()
   const signer = getSigner(state)
-  console.log(signer)
 
   return dispatch(processTransaction({
     web3: web3Selector()(state),

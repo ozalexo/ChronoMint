@@ -67,7 +67,6 @@ class LoginTrezor extends Component {
 
   render () {
     const { previousPage, deviceList, isLoading, navigateToDerivationPathForm } = this.props
-    console.log(deviceList)
     return (
       <div styleName='form'>
         <div styleName='page-title'>

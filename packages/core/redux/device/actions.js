@@ -49,21 +49,18 @@ export const deviceSetStatus = (deviceStatus) => (dispatch) => {
 }
 
 export const initLedgerDevice = (wallet) => async (dispatch, getState) => {
-  console.log('initLedgerDevice')
   const ledger = new LedgerDeviceMock()
   const result = await ledger.getAddressInfoList(0,5)
   dispatch(deviceUpdateList(result))
 }
 
 export const initTrezorDevice = (wallet) => async (dispatch, getState) => {
-  console.log('initTrezorDevice')
   const trezor = new TrezorDeviceMock()
   const result = await trezor.getAddressInfoList(0,5)
   dispatch(deviceUpdateList(result))
 }
 
 export const loadDeviceAccount = (entry) => async (dispatch) => {
-  console.log('load device account')
   const wallet = new AccountModel({
     entry,
   })
@@ -73,6 +70,6 @@ export const loadDeviceAccount = (entry) => async (dispatch) => {
 }
 
 export const deviceNextPage = () => (dispatch, getState) => {
-  
+
 
 }

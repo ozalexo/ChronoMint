@@ -15,9 +15,7 @@ export default class EthereumMemoryDevice extends EventEmitter {
     super()
     const accounts = new Accounts()
     const wallet = accounts.wallet.create()
-    console.log(privateKey)
     const account = accounts.privateKeyToAccount(privateKey)
-    console.log(account)
     wallet.add(account)
     this.wallet = wallet[0]
     Object.freeze(this)
@@ -91,8 +89,7 @@ export default class EthereumMemoryDevice extends EventEmitter {
     const hdWallet = hdKey.fromMasterSeed(seed)
     const w = hdWallet.derivePath(_path).getWallet()
     const account = accounts.privateKeyToAccount(`0x${w.getPrivateKey().toString('hex')}`)
-    wallet.add(account)  
-    console.log(wallet)
+    wallet.add(account)
     return wallet[0]
   }
 

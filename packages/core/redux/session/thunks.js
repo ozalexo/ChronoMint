@@ -161,7 +161,6 @@ export const getProfileSignature = (signer,path) => async (dispatch) => {
   try {
     const signDataString = ProfileService.getSignData()
     const signData = await signer.signData(signDataString,path)
-    console.log(signData)
     const profileSignature = await dispatch(ProfileThunks.getUserProfile(signData.signature))
     dispatch(SessionActions.setProfileSignature(profileSignature))
 

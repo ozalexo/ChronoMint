@@ -5,7 +5,7 @@ const BigNumber = require('bignumber.js')
 import Accounts from 'web3-eth-accounts'
 const DEFAULT_PATH = "m/44'/60'/0'/0"
 const DEFAULT_PATH_FACTORY = (index) => `${DEFAULT_PATH}/${index}`
-const MOCK_SEED = "advice shed boat scan game expire reveal rapid concert settle before vital" 
+const MOCK_SEED = "advice shed boat scan game expire reveal rapid concert settle before vital"
 
 export default class TrezorDeviceMock extends EventEmitter {
   get name () {
@@ -23,7 +23,6 @@ export default class TrezorDeviceMock extends EventEmitter {
   }
 
   getAddressInfo (path) {
-    console.log(path)
     const hdKey = hdkey.fromMasterSeed(MOCK_SEED)
      const wallet = hdKey.derivePath(path).getWallet()
         return {

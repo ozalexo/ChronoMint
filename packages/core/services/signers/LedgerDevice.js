@@ -100,7 +100,6 @@ export default class LedgerDevice extends EventEmitter {
   async signTransaction (txData, path) {
     return this._safeExec(
       async () => {
-	console.log(txData)
         const tx = new EthereumTx({
           ...txData,
           ...omitBy({
@@ -158,17 +157,14 @@ export default class LedgerDevice extends EventEmitter {
   async signData (data, path) {
     return this._safeExec(
       async () => {
-	console.log(data)
         const transport = await TransportU2F.create()
         const app = new AppEth(transport)
         const result = await app.signPersonalMessage(path, Buffer.from(data).toString('hex'))
-	console.log(result)
         const v = parseInt(result.v, 10) - 27
         let vHex = v.toString(16)
         if (vHex.length < 2) {
           vHex = `0${v}`
         }
-        console.log('vHex', vHex, v)
         const signature = `0x${result.r}${result.s}${vHex}`
         return {
           signature: signature

@@ -86,16 +86,13 @@ export const onSubmitLoginForm = (password) => async (dispatch, getState) => {
   const state = getState()
   const { selectedWallet } = state.get(DUCK_PERSIST_ACCOUNT)
   const wlt = new AccountEntryModel(selectedWallet)
-  console.log(wlt) 
     switch(wlt.type) {
      case 'memory' : {
       try {
         const wallet = await dispatch(PersistAccountActions.decryptAccount(wlt, password))
-	console.log(wallet.entry.encrypted[0].address)
 	const signer = getSigner(getState())
-	console.log(signer)
         await dispatch(SessionThunks.getProfileSignature(signer,wallet.entry.encrypted[0].path))
-	      
+
         //await dispatch(NetworkThunks.handleLogin(wallet.entry.encrypted[0].address))
       dispatch(NetworkActions.selectAccount(wallet.entry.encrypted[0].address))
       //await setup(provider)
@@ -121,16 +118,12 @@ export const onSubmitLoginForm = (password) => async (dispatch, getState) => {
      }
 
      case 'device': {
-      
-      console.log('navigate to device login')
-      console.log(SessionThunks)
+
       try {
         const wallet = await dispatch(DeviceActions.loadDeviceAccount(wlt))
-        console.log(wallet.entry.encrypted[0].address)
 	const signer = getSigner(getState())
-	console.log(signer)
         await dispatch(SessionThunks.getProfileSignature(signer,wallet.entry.encrypted[0].path))
-        
+
         //await dispatch(NetworkThunks.handleLogin(wallet.entry.encrypted[0].address))
       dispatch(NetworkActions.selectAccount(wallet.entry.encrypted[0].address))
       //await setup(provider)
@@ -151,7 +144,6 @@ export const onSubmitLoginForm = (password) => async (dispatch, getState) => {
       const defaultURL = await dispatch(SessionThunks.login(selectedAccount))
       dispatch(replace(localStorage.getLastURL() || defaultURL))
       } catch (e) {
-	console.log(e)
         throw new SubmissionError({ password: e && e.message })
       }
       break
@@ -234,7 +226,7 @@ export const onCreateWalletFromJSON = (name, walletJSON, profile) => (dispatch) 
  * TODO: to move logic to utils
 */
 export const onCreateWalletFromDevice = (name, device, profile) => (dispatch) => {
-	
+
   const account = createDeviceAccountEntry(name, device, profile)
 
   dispatch(PersistAccountActions.accountAdd(account))
@@ -295,7 +287,6 @@ export const selectProviderWithNetwork = (networkId, providerId) => (dispatch) =
 }
 
 export const onWalletSelect = (wallet) => async (dispatch) => {
-  console.log(wallet)
   dispatch(PersistAccountActions.accountSelect(wallet))
   dispatch(LoginUINavActions.navigateToLoginPage())
 }

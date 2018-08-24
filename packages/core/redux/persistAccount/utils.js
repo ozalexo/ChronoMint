@@ -75,8 +75,6 @@ export const createAccountEntry = (name, walletFileImportObject, profile = null)
   })
 
 export const createDeviceAccountEntry = (name, device, profile = null) => {
-  console.log('create device account')
-  console.log(device)
   return new AccountEntryModel({
     key: uuid(),
     name,

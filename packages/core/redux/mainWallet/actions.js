@@ -149,7 +149,6 @@ const handleToken = (token: TokenModel) => async (dispatch, getState) => {
           }),
         })
       } else {
-	console.log('Main Eth Wallet update balance')
         const addresses = getMainEthWallet(getState())
         if (addresses.includes(account)) {
           dispatch({
@@ -209,7 +208,6 @@ const handleToken = (token: TokenModel) => async (dispatch, getState) => {
 }
 
 export const fetchTokenBalance = (token: TokenModel, account) => async (dispatch) => {
-  console.log('fetchTokenBalance')
   const tokenDAO = tokenService.getDAO(token.id())
   const balance = await tokenDAO.getAccountBalance(token.blockchain() === BLOCKCHAIN_ETHEREUM ? account : null)
   dispatch({
@@ -222,7 +220,6 @@ export const fetchTokenBalance = (token: TokenModel, account) => async (dispatch
 }
 
 export const initMainWallet = () => async (dispatch) => {
-  console.log('initMainWallet')
   dispatch({ type: WALLET_INIT, isInited: true })
 
   dispatch(subscribeOnTokens(handleToken))

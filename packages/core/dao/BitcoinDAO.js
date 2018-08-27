@@ -3,12 +3,12 @@
  * Licensed under the AGPL Version 3 license.
  */
 
-/*import {
+import {
   bccProvider,
   btcProvider,
   btgProvider,
   ltcProvider,
-} from '@chronobank/login/network/BitcoinProvider'*/
+} from '@chronobank/login/network/BitcoinProvider'
 import EventEmitter from 'events'
 import BigNumber from 'bignumber.js'
 import Amount from '../models/Amount'
@@ -16,8 +16,6 @@ import TokenModel from '../models/tokens/TokenModel'
 import TxModel from '../models/TxModel'
 import TransferExecModel from '../models/TransferExecModel'
 import { bitcoinAddress } from '../models/validator'
-
-//#region CONSTANTS
 
 import {
   BLOCKCHAIN_BITCOIN_CASH,
@@ -29,8 +27,6 @@ import {
   EVENT_UPDATE_LAST_BLOCK,
   EVENT_UPDATE_TRANSACTION,
 } from './constants'
-
-//#endregion CONSTANTS
 
 const EVENT_TX = 'tx'
 const EVENT_TRANSACTION_MAINED = 'transaction'
@@ -256,7 +252,7 @@ export default class BitcoinDAO extends EventEmitter {
   }
 }
 
-//export const btcDAO = new BitcoinDAO(BLOCKCHAIN_BITCOIN, 'BTC', btcProvider)
-//export const bccDAO = new BitcoinDAO(BLOCKCHAIN_BITCOIN_CASH, 'BCC', bccProvider)
-//export const btgDAO = new BitcoinDAO(BLOCKCHAIN_BITCOIN_GOLD, 'BTG', btgProvider)
-//export const ltcDAO = new BitcoinDAO(BLOCKCHAIN_LITECOIN, 'LTC', ltcProvider)
+export const btcDAO = new BitcoinDAO(BLOCKCHAIN_BITCOIN, 'BTC', btcProvider)
+export const bccDAO = new BitcoinDAO(BLOCKCHAIN_BITCOIN_CASH, 'BCC', bccProvider)
+export const btgDAO = new BitcoinDAO(BLOCKCHAIN_BITCOIN_GOLD, 'BTG', btgProvider)
+export const ltcDAO = new BitcoinDAO(BLOCKCHAIN_LITECOIN, 'LTC', ltcProvider)

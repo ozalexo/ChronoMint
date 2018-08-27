@@ -43,7 +43,7 @@ export const getWalletTokens = (walletId: string, isAmountGt: boolean) => {
       const customTokens = wallet.customTokens
       const balances = Object.values(wallet.balances)
 
-      const walletTokensAndBalanceByAddress = ((balances.length && balances) || [])
+      const walletTokensAndBalanceByAddress = balances.length ? balances : []
         .filter((balance) => balance.symbol() === "ETH" || (customTokens ? customTokens.includes(balance.symbol()) : true))
         .filter((balance) => tokens.item(balance.symbol()).isFetched())
         .map((balance) => {

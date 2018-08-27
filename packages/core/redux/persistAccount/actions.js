@@ -149,7 +149,7 @@ export const createHWAccount = ({ name, password, privateKey, mnemonic, numberOf
     key: uuid(),
     name,
     types,
-    encrypted: wallet && wallet.encrypt(password),
+    encrypted: wallet.encrypt(password),
     profile: null,
   })
 

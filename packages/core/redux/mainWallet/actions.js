@@ -21,7 +21,6 @@ import TokenModel from '../../models/tokens/TokenModel'
 import validator from '../../models/validator'
 import AddressModel from '../../models/wallet/AddressModel'
 import AllowanceModel from '../../models/wallet/AllowanceModel'
-import { TXS_PER_PAGE } from '../../models/wallet/TransactionsCollection'
 import { addMarketToken } from '../market/actions'
 import { notify } from '../notifier/actions'
 import { DUCK_SESSION } from '../session/constants'
@@ -40,25 +39,13 @@ import { TX_APPROVE } from '../../dao/constants/ERC20DAO'
 import { DUCK_ETH_MULTISIG_WALLET, ETH_MULTISIG_BALANCE, ETH_MULTISIG_FETCHED } from '../multisigWallet/constants'
 import { WALLETS_SET_IS_TIME_REQUIRED, WALLETS_UPDATE_WALLET } from '../wallets/constants'
 import {
-  BCC,
-  BLOCKCHAIN_BITCOIN,
-  BLOCKCHAIN_BITCOIN_CASH,
-  BLOCKCHAIN_BITCOIN_GOLD,
   BLOCKCHAIN_ETHEREUM,
-  BLOCKCHAIN_LITECOIN,
-  BLOCKCHAIN_NEM,
-  BLOCKCHAIN_WAVES,
-  BTC,
-  BTG,
   ETH,
   EVENT_APPROVAL_TRANSFER,
   EVENT_NEW_TRANSFER,
   EVENT_UPDATE_BALANCE,
   EVENT_UPDATE_TRANSACTION,
-  LTC,
   TIME,
-  WAVES,
-  XEM,
 } from '../../dao/constants'
 import {
   FORM_ADD_NEW_WALLET,
@@ -70,6 +57,9 @@ import {
   WALLET_TRANSACTION,
   WALLET_TRANSACTION_UPDATED,
 } from './constants'
+import {
+  getTxList,
+} from './utils'
 
 export const goBackForAddWalletsForm = () => (dispatch, getState) => {
   const selector = formValueSelector(FORM_ADD_NEW_WALLET)
@@ -383,59 +373,4 @@ export const getTransactionsForMainWallet = ({ wallet, forcedOffset }) => async 
     type: WALLETS_UPDATE_WALLET,
     wallet: new WalletModel({ ...newWallet, transactions }),
   })
-}
-
-export const getTxList = async ({ wallet, forcedOffset, tokens }) => {
-
-  const transactions: TxHistoryModel = new TxHistoryModel({ ...wallet.transactions })
-  const offset = forcedOffset ? 0 : (transactions.transactions.length || 0)
-  const newOffset = offset + TXS_PER_PAGE
-
-  let txList = []
-  let dao
-
-  switch (wallet.blockchain) {
-    case BLOCKCHAIN_ETHEREUM:
-      dao = tokenService.getDAO(ETH)
-      break
-    case BLOCKCHAIN_BITCOIN:
-      dao = tokenService.getDAO(BTC)
-      break
-    case BLOCKCHAIN_BITCOIN_CASH:
-      dao = tokenService.getDAO(BCC)
-      break
-    case BLOCKCHAIN_BITCOIN_GOLD:
-      dao = tokenService.getDAO(BTG)
-      break
-    case BLOCKCHAIN_LITECOIN:
-      dao = tokenService.getDAO(LTC)
-      break
-    case BLOCKCHAIN_NEM:
-      dao = tokenService.getDAO(XEM)
-      break
-    case BLOCKCHAIN_WAVES:
-      dao = tokenService.getDAO(WAVES)
-      break
-  }
-
-  const blocks = transactions.blocks
-  let endOfList = false
-  if (dao) {
-    txList = await dao.getTransfer(wallet.address, wallet.address, offset, TXS_PER_PAGE, tokens)
-
-    txList.sort((a, b) => b.get('time') - a.get('time'))
-
-    for (const tx: TxModel of txList) {
-      if (!blocks[tx.blockNumber()]) {
-        blocks[tx.blockNumber()] = { transactions: [] }
-      }
-      blocks[tx.blockNumber()].transactions.push(tx)
-    }
-
-    if (transactions.transactions.length < newOffset) {
-      endOfList = true
-    }
-  }
-
-  return new TxHistoryModel({ ...transactions, blocks, endOfList })
 }

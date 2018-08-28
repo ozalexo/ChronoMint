@@ -4,33 +4,12 @@
  */
 
 import uuid from 'uuid/v1'
-import hdkey from 'ethereumjs-wallet/hdkey'
-import bip39 from 'bip39'
-import bitcoin from 'bitcoinjs-lib'
 import Accounts from 'web3-eth-accounts'
 import * as ProfileThunks from '../profile/thunks'
 import * as AccountUtils from './utils'
 import EthereumMemoryDevice from '../../services/signers/EthereumMemoryDevice'
-import BitcoinMemoryDevice from '../../services/signers/BitcoinMemoryDevice'
-import BitcoinTrezorDevice from '../../services/signers/BitcoinTrezorDevice'
-import BitcoinLedgerDevice from '../../services/signers/BitcoinLedgerDevice'
-import {
-  AccountModel,
-  AccountEntryModel,
-  AccountProfileModel,
-  AccountCustomNetwork,
-} from '../../models/wallet/persistAccount'
-import {
-  CUSTOM_NETWORKS_LIST_ADD,
-  CUSTOM_NETWORKS_LIST_RESET,
-  CUSTOM_NETWORKS_LIST_UPDATE,
-  DUCK_PERSIST_ACCOUNT,
-  WALLETS_ADD,
-  WALLETS_DESELECT,
-  WALLETS_SELECT,
-  WALLETS_UPDATE_LIST,
-  WALLETS_LOAD,
-} from './constants'
+import { AccountModel, AccountEntryModel, AccountProfileModel, AccountCustomNetwork } from '../../models/wallet/persistAccount'
+import { CUSTOM_NETWORKS_LIST_ADD, CUSTOM_NETWORKS_LIST_RESET, CUSTOM_NETWORKS_LIST_UPDATE, DUCK_PERSIST_ACCOUNT, WALLETS_ADD, WALLETS_DESELECT, WALLETS_SELECT, WALLETS_UPDATE_LIST, WALLETS_LOAD } from './constants'
 
 export const accountAdd = (wallet) => (dispatch) => {
   dispatch({ type: WALLETS_ADD, wallet })
@@ -54,35 +33,25 @@ export const accountUpdateList = (walletList) => (dispatch) => {
 
 export const accountUpdate = (wallet) => (dispatch, getState) => {
   const state = getState()
-
   const { walletsList } = state.get(DUCK_PERSIST_ACCOUNT)
-  console.log('walletsList')
-  console.log(walletsList)
-
   const index = walletsList.findIndex((item) => item.key === wallet.key)
-
   const copyWalletList = [...walletsList]
 
   copyWalletList.splice(index, 1, wallet)
 
   dispatch({ type: WALLETS_UPDATE_LIST, walletsList: copyWalletList })
-
 }
 
 export const decryptAccount = (entry, password) => async (dispatch) => {
-  console.log(entry)
-  const privateKey = EthereumMemoryDevice.decrypt({entry:entry.encrypted[0].wallet, password })
+  const privateKey = EthereumMemoryDevice.decrypt({ entry: entry.encrypted[0].wallet, password })
   const account = new AccountModel({
     entry,
     privateKey,
   })
-  return 
 
   dispatch(accountLoad(account))
 
   return account
-
-
 }
 
 export const validateAccountName = (name) => (dispatch, getState) => {
@@ -107,11 +76,9 @@ export const resetPasswordAccount = (wallet, mnemonic, password) => async (dispa
   dispatch(accountUpdate(newWallet))
 
   dispatch(accountSelect(newWallet))
-
 }
 
 export const createAccount = ({ name, wallet, type }) => async (dispatch) => {
-
   const entry = new AccountEntryModel({
     key: uuid(),
     name,
@@ -120,21 +87,14 @@ export const createAccount = ({ name, wallet, type }) => async (dispatch) => {
     profile: null,
   })
 
-  console.log(entry)
   const newAccounts = await dispatch(setProfilesForAccounts([entry]))
-  console.log(newAccounts)
   return newAccounts[0] || entry
-
 }
 
-export const createMemoryAccount = ({name, password, mnemonic, privateKey}) => async (dispatch) => {
+export const createMemoryAccount = ({ name, password, mnemonic, privateKey }) => async (dispatch) => {
   const wallet = await EthereumMemoryDevice.create({ privateKey, mnemonic, password })
-  console.log('create account')
-  console.log(wallet)
-  const account = await dispatch(createAccount({name, wallet, type: 'memory'}))
-  console.log(account)
+  const account = await dispatch(createAccount({ name, wallet, type: 'memory' }))
   return account
-
 }
 
 export const downloadWallet = () => (dispatch, getState) => {
@@ -156,24 +116,18 @@ export const downloadWallet = () => (dispatch, getState) => {
 }
 
 export const setProfilesForAccounts = (walletsList) => async (dispatch) => {
-
   const addresses = AccountUtils.getWalletsListAddresses(walletsList)
   const data = await dispatch(ProfileThunks.getUserInfo(addresses))
 
   if (Array.isArray(data)) {
     return data.reduce((prev, profile) => {
-
-      const updatedProfileAccounts =
-        walletsList
-          .filter((wallet) => AccountUtils.getAccountAddress(wallet, true) === profile.address)
-          .map((account) => {
-            const profileModel = profile && new AccountProfileModel(profile) || null
-            return new AccountEntryModel({
-              ...account,
-              profile: profileModel,
-            })
-
-          })
+      const updatedProfileAccounts = walletsList.filter((wallet) => AccountUtils.getAccountAddress(wallet, true) === profile.address).map((account) => {
+        const profileModel = (profile && new AccountProfileModel(profile)) || null
+        return new AccountEntryModel({
+          ...account,
+          profile: profileModel,
+        })
+      })
 
       return [].concat(prev, updatedProfileAccounts)
     }, [])

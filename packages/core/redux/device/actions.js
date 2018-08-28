@@ -3,20 +3,14 @@
  * Licensed under the AGPL Version 3 license.
  */
 
-import TrezorDevice from '../../services/signers/TrezorDevice'
 import TrezorDeviceMock from '../../services/signers/TrezorDeviceMock'
-import LedgerDevice from '../../services/signers/LedgerDevice'
 import LedgerDeviceMock from '../../services/signers/LedgerDeviceMock'
-import BitcoinMemoryDevice from '../../services/signers/BitcoinMemoryDevice'
 import MetamaskPlugin from '../../services/signers/MetamaskPlugin'
-import { getSigner } from '../persistAccount/selectors'
 import { accountLoad } from '../persistAccount/actions'
 import {
   AccountModel,
-  DeviceEntryModel,
 } from '../../models'
 import {
-  DUCK_DEVICE_ACCOUNT,
   DEVICE_ADD,
   DEVICE_SELECT,
   DEVICE_DESELECT,
@@ -46,25 +40,25 @@ export const deviceUpdateList = (deviceList) => (dispatch) => {
 }
 
 export const deviceSetStatus = (deviceStatus) => (dispatch) => {
-  dispatch({ type: DEVICE_SET_STATUS, deviceStatus})
+  dispatch({ type: DEVICE_SET_STATUS, deviceStatus })
 }
 
-export const initLedgerDevice = (wallet) => async (dispatch, getState) => {
-  console.log('initLedgerDevice')
+// eslint-disable-next-line no-unused-vars
+export const initLedgerDevice = (wallet) => async (dispatch) => {
   const ledger = new LedgerDeviceMock()
   const result = await ledger.getAddressInfoList(0,5)
   dispatch(deviceUpdateList(result))
 }
 
-export const initTrezorDevice = (wallet) => async (dispatch, getState) => {
-  console.log('initTrezorDevice')
+// eslint-disable-next-line no-unused-vars
+export const initTrezorDevice = (wallet) => async (dispatch) => {
   const trezor = new TrezorDeviceMock()
   const result = await trezor.getAddressInfoList(0,5)
   dispatch(deviceUpdateList(result))
 }
 
-export const initMetamaskPlugin = (wallet) => async (dispatch, getState) => {
-  console.log('initMetamaskPlugin')
+// eslint-disable-next-line no-unused-vars
+export const initMetamaskPlugin = (wallet) => async (dispatch) => {
   const metamask = new MetamaskPlugin()
   await metamask.init()
   const result = await metamask.getAddressInfoList()
@@ -72,7 +66,6 @@ export const initMetamaskPlugin = (wallet) => async (dispatch, getState) => {
 }
 
 export const loadDeviceAccount = (entry) => async (dispatch) => {
-  console.log('load device account')
   const wallet = new AccountModel({
     entry,
   })
@@ -81,7 +74,7 @@ export const loadDeviceAccount = (entry) => async (dispatch) => {
   return wallet
 }
 
-export const deviceNextPage = () => (dispatch, getState) => {
-  
-
+// eslint-disable-next-line no-unused-vars
+export const deviceNextPage = () => (dispatch) => {
+  // TODO
 }

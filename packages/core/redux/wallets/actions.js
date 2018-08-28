@@ -51,20 +51,17 @@ export const initWallets = () => (dispatch) => {
 }
 
 const initWalletsFromKeys = () => (dispatch, getState) => {
-  console.log('Init wallets from keys')
   const state = getState()
   const account = getPersistAccount(state)
-  console.log(account)
 
-    const wallet = new WalletModel({
-      address: account.decryptedWallet.entry.encrypted[0].address,
-      blockchain: 'Ethereum',
-      isMain: true,
-      walletDerivedPath: account.decryptedWallet.entry.encrypted[0].path 
-    })
-    console.log(wallet)
-    dispatch(setWallet(wallet))
-    dispatch(updateWalletBalance({ wallet }))
+  const wallet = new WalletModel({
+    address: account.decryptedWallet.entry.encrypted[0].address,
+    blockchain: 'Ethereum',
+    isMain: true,
+    walletDerivedPath: account.decryptedWallet.entry.encrypted[0].path
+  })
+  dispatch(setWallet(wallet))
+  dispatch(updateWalletBalance({ wallet }))
 }
 
 const initDerivedWallets = () => async (dispatch, getState) => {
@@ -168,7 +165,6 @@ export const mainTransfer = (wallet: WalletModel, token: TokenModel, amount: Amo
   const tx = tokenDAO.transfer(wallet.address, recipient, amount, token) // added token for btc like transfers
 
   if (tx) {
-    console.log(wallet)
     await dispatch(executeTransaction({ tx, options: { feeMultiplier, walletDerivedPath: wallet.walletDerivedPath } }))
   }
 }
@@ -215,7 +211,7 @@ export const mainRevoke = (token: TokenModel, spender: string, feeMultiplier: Nu
 // eslint-disable-next-line complexity
 export const createNewWallet = ({ name }) => async (dispatch, getState) => {
   const state = getState()
-  const signer = getSigner(state)
+  // const signer = getSigner(state)
   const account = getState().get(DUCK_SESSION).account
   const wallets = getWallets(state)
 
@@ -230,16 +226,14 @@ export const createNewWallet = ({ name }) => async (dispatch, getState) => {
     })
 
   let newDeriveNumber = deriveNumber
-  let derivedPath
-  let newWallet
   let address
 
-      if (newDeriveNumber === undefined || newDeriveNumber === null) {
-        newDeriveNumber = lastDeriveNumbers.hasOwnProperty(blockchain) ? lastDeriveNumbers[blockchain] + 1 : 0
-      }
-      derivedPath = `${WALLET_HD_PATH}/${newDeriveNumber}`
-      //const newWalletSigner = await SignerMemoryModel.fromDerivedPath({ seed: signer.privateKey, derivedPath })
-      //address = newWalletSigner.address
+  if (newDeriveNumber === undefined || newDeriveNumber === null) {
+    newDeriveNumber = lastDeriveNumbers.hasOwnProperty(blockchain) ? lastDeriveNumbers[blockchain] + 1 : 0
+  }
+  const derivedPath = `${WALLET_HD_PATH}/${newDeriveNumber}`
+  //const newWalletSigner = await SignerMemoryModel.fromDerivedPath({ seed: signer.privateKey, derivedPath })
+  //address = newWalletSigner.address
 
   const wallet = new WalletModel({
     name,

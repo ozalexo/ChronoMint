@@ -91,7 +91,7 @@ class LedgerLoginPage extends PureComponent {
 
   async onSubmitDevice (device) {
     this.setState({
-	    device: device
+      device: device,
     })
 
     let response = null, userName = null, profile = null
@@ -126,15 +126,16 @@ class LedgerLoginPage extends PureComponent {
     navigateToSelectWallet()
   }
 
+  // eslint-disable-next-line no-unused-vars
   async onSubmitDerivationPath ({ path }) {
     this.setState({
-      page: LedgerLoginPage.PAGES.DEVICE_SELECT_FORM
+      page: LedgerLoginPage.PAGES.DEVICE_SELECT_FORM,
     })
   }
 
   navigateToDerivationPathForm () {
     this.setState({
-      page: LedgerLoginPage.PAGES.DERIVATION_PATH_FORM
+      page: LedgerLoginPage.PAGES.DERIVATION_PATH_FORM,
     })
   }
 
@@ -145,7 +146,7 @@ class LedgerLoginPage extends PureComponent {
   }
 
   previousPage () {
-    if (this.state.page === LedgerLoginPage.PAGES.DEVICE_SELECT_FORM){
+    if (this.state.page === LedgerLoginPage.PAGES.DEVICE_SELECT_FORM) {
       this.props.navigateBack()
     } else {
       this.setState ({ page: this.state.page - 1 })

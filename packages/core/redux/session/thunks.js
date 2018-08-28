@@ -3,12 +3,11 @@
  * Licensed under the AGPL Version 3 license.
  */
 
-import { getNetworkById, LOCAL_ID, LOCAL_PRIVATE_KEYS, LOCAL_PROVIDER_ID } from '@chronobank/login/network/settings'
+import { getNetworkById } from '@chronobank/login/network/settings'
 import { DUCK_NETWORK } from '@chronobank/login/redux/network/constants'
 import * as NetworkActions from '@chronobank/login/redux/network/actions'
 import { removeWatchersUserMonitor } from '@chronobank/core-dependencies/redux/ui/actions'
 import web3Provider from '@chronobank/login/network/Web3Provider'
-import setup from '@chronobank/login/network/EngineUtils'
 import * as SessionActions from './actions'
 import * as ProfileThunks from '../profile/thunks'
 import ProfileService from '../profile/service'
@@ -20,7 +19,7 @@ import { initEthereum } from '../ethereum/actions'
 import { DUCK_PERSIST_ACCOUNT } from '../persistAccount/constants'
 import { DEFAULT_CBE_URL, DEFAULT_USER_URL, DUCK_SESSION } from './constants'
 
-const ERROR_NO_ACCOUNTS = 'Couldn\'t get any accounts! Make sure your Ethereum client is configured correctly.'
+const ERROR_NO_ACCOUNTS = "Couldn't get any accounts! Make sure your Ethereum client is configured correctly."
 
 export const getAccounts = () => (dispatch, getState) => {
   const state = getState()
@@ -64,8 +63,7 @@ export const getProviderSettings = () => (dispatch, getState) => {
   const { protocol, host } = network
 
   if (!host) {
-    const customNetwork = customNetworksList
-      .find((network) => network.id === selectedNetworkId)
+    const customNetwork = customNetworksList.find((network) => network.id === selectedNetworkId)
 
     return {
       network: customNetwork,
@@ -84,8 +82,7 @@ export const selectProvider = (selectedProviderId) => (dispatch) => {
   dispatch(NetworkActions.networkSetProvider(selectedProviderId))
 }
 
-export const changeGasSlideValue = (value, blockchain) => (dispatch) =>
-  dispatch(SessionActions.gasSliderMultiplierChange(value, blockchain))
+export const changeGasSlideValue = (value, blockchain) => (dispatch) => dispatch(SessionActions.gasSliderMultiplierChange(value, blockchain))
 
 export const destroyNetworkSession = (isReset = true) => (dispatch) => {
   if (isReset) {
@@ -132,18 +129,13 @@ export const login = (account) => async (dispatch, getState) => {
     network = customNetworksList.find((network) => network.id === selectedNetworkId)
   }
 
-  const web3 = typeof window !== 'undefined'
-    ? web3Factory(network)
-    : null
+  const web3 = typeof window !== 'undefined' ? web3Factory(network) : null
 
   await dispatch(initEthereum({ web3 }))
   await dispatch(watcher({ web3 }))
 
   const userManagerDAO = daoByType('UserManager')(getState())
-  const [profile /*memberId*/] = await Promise.all([
-    userManagerDAO.getMemberProfile(account, web3),
-    userManagerDAO.getMemberId(account),
-  ])
+  const [profile /*memberId*/] = await Promise.all([userManagerDAO.getMemberProfile(account, web3), userManagerDAO.getMemberId(account)])
   const isCBE = false
   dispatch(SessionActions.sessionProfile(profile, isCBE))
   const defaultURL = isCBE ? DEFAULT_CBE_URL : DEFAULT_USER_URL
@@ -154,14 +146,13 @@ export const bootstrap = () => async () => {
   return true //FIXME remove method
 }
 
-export const getProfileSignature = (signer,path) => async (dispatch) => {
+export const getProfileSignature = (signer, path) => async (dispatch) => {
   if (!signer) {
     return
   }
   try {
     const signDataString = ProfileService.getSignData()
-    const signData = await signer.signData(signDataString,path)
-    console.log(signData)
+    const signData = await signer.signData(signDataString, path)
     const profileSignature = await dispatch(ProfileThunks.getUserProfile(signData.signature))
     dispatch(SessionActions.setProfileSignature(profileSignature))
 
@@ -177,8 +168,10 @@ export const updateUserProfile = (profile) => async (dispatch, getState) => {
   const { profileSignature } = getState().get(DUCK_SESSION)
   const newProfile = await dispatch(ProfileThunks.updateUserProfile(profile))
 
-  dispatch(SessionActions.setProfileSignature({
-    ...profileSignature,
-    profile: newProfile,
-  }))
+  dispatch(
+    SessionActions.setProfileSignature({
+      ...profileSignature,
+      profile: newProfile,
+    })
+  )
 }

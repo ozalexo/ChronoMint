@@ -6,7 +6,7 @@
 import { watchInitMonitor } from '@chronobank/login/redux/monitor/actions'
 import { watchInitUserMonitor } from '@chronobank/core-dependencies/redux/ui/actions'
 import { watchInitTokens, watchPlatformManager } from '../assetsManager/actions'
-import { initMainWallet } from '../mainWallet/actions'
+// import { initMainWallet } from '../mainWallet/actions'
 import { watchInitMarket } from '../market/actions'
 import { watchEventsToHistory } from '../events/actions'
 import { initTokens } from '../tokens/actions'
@@ -26,7 +26,7 @@ export const watcher = ({ web3 }) => async (dispatch) => {
   await dispatch(initDAOs({ web3 }))
   dispatch(initMultisigWalletManager())
   dispatch(initTokens())
-//  dispatch(initMainWallet())
+  // dispatch(initMainWallet())
   dispatch(initWallets())
   dispatch(watchPlatformManager())
   dispatch(watchInitTokens())

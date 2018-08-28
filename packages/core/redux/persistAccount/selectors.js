@@ -13,6 +13,7 @@ import LedgerDevice from '../../services/signers/LedgerDevice'
 import LedgerDeviceMock from '../../services/signers/LedgerDeviceMock'
 import BitcoinMemoryDevice from '../../services/signers/BitcoinMemoryDevice'
 import NemMemoryDevice from '../../services/signers/NemMemoryDevice'
+import BitcoinTrezorDeviceMock from '../../services/signers/BitcoinTrezorDeviceMock'
 
 export const getPersistAccount = (state) => {
   return state.get(DUCK_PERSIST_ACCOUNT)
@@ -20,7 +21,6 @@ export const getPersistAccount = (state) => {
 
 export const getSigner = (state) => {
   const account = getPersistAccount(state)
-  console.log(account)
   switch (account.selectedWallet.encrypted[0].type) {
     case 'trezor_mock': {
       return new TrezorDeviceMock()
@@ -50,7 +50,7 @@ export const getBtcSigner = (state) => {
       return new BitcoinMemoryDevice(account.decryptedWallet.privateKey)
     }
   }
-}  
+}
 
 export const getNemSigner = (state) => {
   const account = getPersistAccount(state)

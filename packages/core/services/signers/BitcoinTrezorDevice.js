@@ -18,7 +18,7 @@ export default class BitcoinTrezorDevice extends EventEmitter {
   // this method is a part of base interface
   getAddress (path) {
     return  bitcoin.HDNode
-      .fromBase58(xpub, this.network)
+      .fromBase58(this.xpub, this.network)
       .derivePath(path).getAddress()
   }
 
@@ -66,9 +66,6 @@ export default class BitcoinTrezorDevice extends EventEmitter {
       outputs.push(output)
     })
 
-    // console.log(inputs)
-    // console.log(outputs)
-
     const result = await TrezorConnect.signTransaction({
       inputs: inputs,
       outputs: outputs,
@@ -77,6 +74,5 @@ export default class BitcoinTrezorDevice extends EventEmitter {
 
     return result
 
-    // console.log(result)
   }
 }

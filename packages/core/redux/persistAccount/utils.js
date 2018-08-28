@@ -23,6 +23,7 @@ export const replaceWallet = (wallet, walletList) => {
   return copyWalletList
 }
 
+// eslint-disable-next-line no-unused-vars
 export const getAddress = (address, hexFormat = false) => {
   return address//`${ hexFormat ? '0x' : ''}${address}`
 }
@@ -56,8 +57,8 @@ export const getAccountAvatarImg = (account) => {
 }
 
 export const generateMnemonic = () => {
-    return bip39.generateMnemonic()
-  }
+  return bip39.generateMnemonic()
+}
 
 export const getAccountAvatar = (account: AccountEntryModel) => {
   const img = getAccountAvatarImg(account)
@@ -75,8 +76,6 @@ export const createAccountEntry = (name, walletFileImportObject, profile = null)
   })
 
 export const createDeviceAccountEntry = (name, device, profile = null) => {
-  console.log('create device account')
-  console.log(device)
   return new AccountEntryModel({
     key: uuid(),
     name,

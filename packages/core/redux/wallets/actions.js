@@ -3,20 +3,11 @@
  * Licensed under the AGPL Version 3 license.
  */
 
-import { bccProvider, btcProvider, btgProvider, ltcProvider } from '@chronobank/login/network/BitcoinProvider'
-import { nemProvider } from '@chronobank/login/network/NemProvider'
-import { wavesProvider } from '@chronobank/login/network/WavesProvider'
+import { ethereumProvider } from '@chronobank/login/network/EthereumProvider'
 import {
-  BLOCKCHAIN_BITCOIN,
-  BLOCKCHAIN_BITCOIN_CASH,
-  BLOCKCHAIN_BITCOIN_GOLD,
   BLOCKCHAIN_ETHEREUM,
-  BLOCKCHAIN_LITECOIN,
-  BLOCKCHAIN_NEM,
-  BLOCKCHAIN_WAVES,
   WALLET_HD_PATH,
 } from '@chronobank/login/network/constants'
-import { ethereumProvider } from '@chronobank/login/network/EthereumProvider'
 import WalletModel from '../../models/wallet/WalletModel'
 import { subscribeOnTokens } from '../tokens/actions'
 import { formatBalances, getWalletBalances } from '../tokens/utils'
@@ -29,6 +20,8 @@ import ethereumDAO from '../../dao/EthereumDAO'
 import { getMainEthWallet, getWallets } from './selectors/models'
 import { notifyError } from '../notifier/actions'
 import { DUCK_SESSION } from '../session/constants'
+import { AllowanceCollection, SignerMemoryModel } from '../../models'
+import { executeTransaction } from '../ethereum/actions'
 import {
   AllowanceCollection,
   SignerMemoryModel,
@@ -59,30 +52,25 @@ export const setWalletBalance = (walletId, balance) => (dispatch) => dispatch({ 
 
 export const initWallets = () => (dispatch) => {
   dispatch(initWalletsFromKeys())
-  dispatch(initDerivedWallets())
+  //TODO refactor DerivedWallets separate for each blockchain
+  //dispatch(initDerivedWallets())
 }
 
-const initWalletsFromKeys = () => (dispatch) => {
-  const providers = [
-    bccProvider,
-    btgProvider,
-    ltcProvider,
-    btcProvider,
-    nemProvider,
-    wavesProvider,
-    ethereumProvider,
-  ]
+const initWalletsFromKeys = () => (dispatch, getState) => {
+  console.log('Init wallets from keys')
+  const state = getState()
+  const account = getPersistAccount(state)
+  console.log(account)
 
-  providers.forEach((provider) => {
     const wallet = new WalletModel({
-      address: provider.getAddress(),
-      blockchain: provider.id(),
+      address: account.decryptedWallet.entry.encrypted[0].address,
+      blockchain: 'Ethereum',
       isMain: true,
+      walletDerivedPath: account.decryptedWallet.entry.encrypted[0].path 
     })
-
+    console.log(wallet)
     dispatch(setWallet(wallet))
     dispatch(updateWalletBalance({ wallet }))
-  })
 }
 
 const initDerivedWallets = () => async (dispatch, getState) => {
@@ -94,27 +82,6 @@ const initDerivedWallets = () => async (dispatch, getState) => {
     if (wallet.isDerived && !wallet.isMain && isOwner(wallet, account)) {
       dispatch(updateWalletBalance({ wallet }))
 
-      switch (wallet.blockchain) {
-        case BLOCKCHAIN_BITCOIN:
-          btcProvider.createNewChildAddress(wallet.deriveNumber)
-          btcProvider.subscribeNewWallet(wallet.address)
-          break
-        case BLOCKCHAIN_BITCOIN_CASH:
-          bccProvider.createNewChildAddress(wallet.deriveNumber)
-          bccProvider.subscribeNewWallet(wallet.address)
-          break
-        case BLOCKCHAIN_BITCOIN_GOLD:
-          btgProvider.createNewChildAddress(wallet.deriveNumber)
-          btgProvider.subscribeNewWallet(wallet.address)
-          break
-        case BLOCKCHAIN_LITECOIN:
-          ltcProvider.createNewChildAddress(wallet.deriveNumber)
-          ltcProvider.subscribeNewWallet(wallet.address)
-          break
-        case BLOCKCHAIN_ETHEREUM:
-          break
-        default:
-      }
     }
   })
 }
@@ -275,7 +242,7 @@ export const mainRevoke = (token: TokenModel, spender: string, feeMultiplier: Nu
 }
 
 // eslint-disable-next-line complexity
-export const createNewChildAddress = ({ blockchain, tokens, name, deriveNumber }) => async (dispatch, getState) => {
+export const createNewWallet = ({ name }) => async (dispatch, getState) => {
   const state = getState()
   const signer = getSigner(state)
   const account = getState().get(DUCK_SESSION).account
@@ -296,40 +263,12 @@ export const createNewChildAddress = ({ blockchain, tokens, name, deriveNumber }
   let newWallet
   let address
 
-  switch (blockchain) {
-    case BLOCKCHAIN_ETHEREUM:
       if (newDeriveNumber === undefined || newDeriveNumber === null) {
         newDeriveNumber = lastDeriveNumbers.hasOwnProperty(blockchain) ? lastDeriveNumbers[blockchain] + 1 : 0
       }
       derivedPath = `${WALLET_HD_PATH}/${newDeriveNumber}`
-      const newWalletSigner = await SignerMemoryModel.fromDerivedPath({ seed: signer.privateKey, derivedPath })
-      address = newWalletSigner.address
-
-      break
-    case BLOCKCHAIN_BITCOIN:
-      if (newDeriveNumber === undefined || newDeriveNumber === null) {
-        newDeriveNumber = lastDeriveNumbers.hasOwnProperty(blockchain) ? lastDeriveNumbers[blockchain] + 1 : 0
-      }
-      derivedPath = `${WALLET_HD_PATH}/${newDeriveNumber}`
-      newWallet = btcProvider.createNewChildAddress(newDeriveNumber)
-      address = newWallet.getAddress()
-      btcProvider.subscribeNewWallet(address)
-      break
-    case BLOCKCHAIN_LITECOIN:
-      if (newDeriveNumber === undefined || newDeriveNumber === null) {
-        newDeriveNumber = lastDeriveNumbers.hasOwnProperty(blockchain) ? lastDeriveNumbers[blockchain] + 1 : 0
-      }
-      derivedPath = `${WALLET_HD_PATH}/${newDeriveNumber}`
-      newWallet = ltcProvider.createNewChildAddress(newDeriveNumber)
-      address = newWallet.getAddress()
-      ltcProvider.subscribeNewWallet(address)
-      break
-    case BLOCKCHAIN_BITCOIN_GOLD:
-    case BLOCKCHAIN_NEM:
-    case BLOCKCHAIN_WAVES:
-    default:
-      return null
-  }
+      //const newWalletSigner = await SignerMemoryModel.fromDerivedPath({ seed: signer.privateKey, derivedPath })
+      //address = newWalletSigner.address
 
   const wallet = new WalletModel({
     name,

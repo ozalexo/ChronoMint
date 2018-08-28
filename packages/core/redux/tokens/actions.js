@@ -16,7 +16,7 @@ import Amount from '../../models/Amount'
 import { daoByType } from '../daos/selectors'
 import TxExecModel from '../../models/TxExecModel'
 import { web3Selector } from '../ethereum/selectors'
-import { estimateGas } from '../ethereum/actions'
+import { estimateGas } from '../ethereum/thunks'
 
 import {
   TRANSFER_CANCELLED,
@@ -117,21 +117,21 @@ export const alternateTxHandlingFlow = (dao) => (dispatch) => {
 }
 
 export const initTokens = () => async (dispatch, getState) => {
-  console.log('init tokens')
-  if (getState().get(DUCK_TOKENS).isInited()) {
+  let state = getState()
+  if (state.get(DUCK_TOKENS).isInited()) {
     return
   }
-  const web3 = web3Selector()(getState())
+  const web3 = web3Selector()(state)
   ethereumDAO.connect(web3)
 
-  dispatch(alternateTxHandlingFlow(ethereumDAO))
   dispatch(tokensInit())
   dispatch(setTokensFetchingCount(0))
-  const erc20: ERC20ManagerDAO = daoByType('ERC20Manager')(getState())
+  const erc20: ERC20ManagerDAO = daoByType('ERC20Manager')(state)
 
+  state = getState()
   erc20
     .on(EVENT_ERC20_TOKENS_COUNT, async (count) => {
-      const currentCount = getState().get(DUCK_TOKENS).leftToFetch()
+      const currentCount = state.get(DUCK_TOKENS).leftToFetch()
       dispatch(setTokensFetchingCount(currentCount + count + 1 /*eth*/))
 
       // eth
@@ -157,7 +157,6 @@ export const initTokens = () => async (dispatch, getState) => {
         }),
       })
 
-      dispatch(alternateTxHandlingFlow(dao))
     })
     .fetchTokens()
 
@@ -167,9 +166,10 @@ export const initTokens = () => async (dispatch, getState) => {
 //  dispatch(watchLatestBlock())
 }
 
-/*export const initBtcLikeTokens = () => async (dispatch, getState) => {
+export const initBtcLikeTokens = () => async (dispatch, getState) => {
+  const state = getState()
   const btcLikeTokens = [btcDAO, bccDAO, btgDAO, ltcDAO]
-  const currentCount = getState().get(DUCK_TOKENS).leftToFetch()
+  const currentCount = state.get(DUCK_TOKENS).leftToFetch()
   dispatch(setTokensFetchingCount(currentCount + btcLikeTokens.length))
 
   return Promise.all(
@@ -177,7 +177,7 @@ export const initTokens = () => async (dispatch, getState) => {
       .map(async (dao) => {
         try {
           dao.on(EVENT_UPDATE_LAST_BLOCK, (newBlock) => {
-            const blocks = getState().get(DUCK_TOKENS).latestBlocks()
+            const blocks = state.get(DUCK_TOKENS).latestBlocks()
             const currentBlock = blocks[dao.getBlockchain()]
             if (currentBlock && newBlock.block.blockNumber > currentBlock.blockNumber) {
               dispatch(setLatestBlock(newBlock.blockchain, newBlock.block))
@@ -206,7 +206,6 @@ export const initTokens = () => async (dispatch, getState) => {
     const nem = await dao.fetchToken()
     tokenService.registerDAO(nem, dao)
     dispatch(tokenFetched(nem))
-    dispatch(alternateTxHandlingFlow(dao))
     dispatch(initNemMosaicTokens(nem))
   } catch (e) {
     dispatch(tokensLoadingFailed())
@@ -214,7 +213,6 @@ export const initTokens = () => async (dispatch, getState) => {
 }
 
 export const initNemMosaicTokens = (nem: TokenModel) => async (dispatch, getState) => {
-
   const mosaics = nemProvider.getMosaics()
   const currentCount = getState().get(DUCK_TOKENS).leftToFetch()
   dispatch(setTokensFetchingCount(currentCount + mosaics.length))
@@ -226,8 +224,7 @@ export const initNemMosaicTokens = (nem: TokenModel) => async (dispatch, getStat
         try {
           const token = await dao.fetchToken()
           tokenService.registerDAO(token, dao)
-          dispatch(tokenFetched(nem))
-          dispatch(alternateTxHandlingFlow(dao))
+          dispatch(tokenFetched(token))
         } catch (e) {
           dispatch(tokensLoadingFailed())
         }

@@ -10,7 +10,9 @@ import assetsManager from './assetsManager/reducer'
 import dao from './daos/reducer'
 import device from './device/reducer'
 import ethereum from './ethereum/reducer'
+import nem from './nem/reducer'
 import ethMultisigWallet from './multisigWallet/reducer'
+import events from './events/reducer'
 //import mainWallet from './mainWallet/reducer'
 import market from './market/reducer'
 import notifier from './notifier/reducer'
@@ -24,7 +26,6 @@ import voting from './voting/reducer'
 import wallet from './wallet/reducer'
 import wallets from './wallets/reducer'
 import watcher from './watcher/reducer'
-import events from './events/reducer'
 
 const coreReducers = {
   assetsHolder,
@@ -32,7 +33,9 @@ const coreReducers = {
   dao,
   device,
   ethereum,
+  nem,
   ethMultisigWallet,
+  events,
 //  mainWallet,
   market,
   notifier,
@@ -46,7 +49,6 @@ const coreReducers = {
   wallet,
   wallets,
   watcher,
-  events,
 }
 
 export default coreReducers

@@ -1,15 +1,14 @@
 import uuid from 'uuid/v1'
-import type BigNumber from 'bignumber.js'
+import BigNumber from 'bignumber.js'
 import coinselect from 'coinselect'
 import bitcoin from 'bitcoinjs-lib'
-import { TxEntryModel } from '../../models'
+import { TxEntryModel, TxExecModel } from '../../models'
 import {
   BLOCKCHAIN_BITCOIN,
   BLOCKCHAIN_BITCOIN_CASH,
   BLOCKCHAIN_BITCOIN_GOLD,
   BLOCKCHAIN_LITECOIN,
 } from '../../dao/constants'
-import BitcoinMiddlewareService from './BitcoinMiddlewareService'
 
 export const createBitcoinTxEntryModel = (entry, options = {}) =>
   new TxEntryModel({
@@ -17,7 +16,7 @@ export const createBitcoinTxEntryModel = (entry, options = {}) =>
     isSubmitted: true,
     isAccepted: false,
     walletDerivedPath: options && options.walletDerivedPath,
-    symbol: options.symbol,
+    symbol: options && options.symbol,
     ...entry,
   })
 
@@ -35,6 +34,7 @@ export const describeTransaction = (to, amount: BigNumber, feeRate, utxos) => {
       value: Number.parseInt(output.satoshis),
     }
   }), targets, Math.ceil(feeRate))
+
   return { inputs, outputs, fee }
 }
 
@@ -73,23 +73,16 @@ export const getBtcFee = async (
   }
 }
 
-/**
- * get UTXOS for address
- * @param address
- * @param options
- * @returns {Promise<any>}
- */
-const getUtxos = (address, options): Promise<any> => {
-  return BitcoinMiddlewareService.getAddressUTXOS(address, options)
-}
-
-export const describeBitcoinTransaction = async (to, amount: BigNumber, options) => {
-  const { from, feeRate, blockchain, network } = options
+export const describeBitcoinTransaction = async (tx, options) => {
+  const { to, from, value } = tx
+  const { feeRate, blockchain, network } = options
   const bitcoinNetwork = bitcoin.networks[network[blockchain]]
   const { data } = await getUtxos(from, { blockchain, type: network[blockchain] })
-  const { inputs, outputs, fee } = describeTransaction(to, amount, feeRate, data)
+  const { inputs, outputs, fee } = describeTransaction(to, value, feeRate, data)
 
-  if (!inputs || !outputs) throw new Error('Bad transaction data')
+  if (!inputs || !outputs) {
+    throw new Error(`Cannot describe ${blockchain} transaction. Bad transaction data.`)
+  }
 
   const txb = new bitcoin.TransactionBuilder(bitcoinNetwork)
   for (const input of inputs) {
@@ -112,11 +105,15 @@ export const describeBitcoinTransaction = async (to, amount: BigNumber, options)
 }
 
 export const signInputsMap = {
+
+  // Bitcoin
   [BLOCKCHAIN_BITCOIN]: (txb, inputs, signer) => {
     for (let i = 0; i < inputs.length; i++) {
       txb.sign(i, signer.keyPair)
     }
   },
+
+  // Bitcoin Cash
   [BLOCKCHAIN_BITCOIN_CASH]: (txb, inputs, from) => {
     txb.enableBitcoinCash(true)
     txb.setVersion(2)
@@ -128,6 +125,8 @@ export const signInputsMap = {
       txb.sign(i, wallet.keyPair, null, hashType, inputs[i].value)
     }
   },
+
+  // Bitcoin Gold
   [BLOCKCHAIN_BITCOIN_GOLD]: (txb, inputs, from) => {
     txb.enableBitcoinGold(true)
     txb.setVersion(2)
@@ -139,5 +138,33 @@ export const signInputsMap = {
       txb.sign(i, wallet.keyPair, null, hashType, inputs[i].value)
     }
   },
+
+  // Litecoin
   [BLOCKCHAIN_LITECOIN]: null, // not specified
+}
+
+export const prepareBitcoinTransaction = (tx,  token, network, feeMultiplier = 1, satPerByte = null) => async () => {
+  // const state = getState()
+  // const token = getToken(symbol)(state)
+  const tokenRate = satPerByte ? satPerByte : token.feeRate()
+  // const network = getSelectedNetwork()(state)
+  const prepared = await describeBitcoinTransaction(
+    tx.to,
+    tx.value,
+    {
+      from: tx.from,
+      feeRate: new BigNumber(tokenRate).mul(feeMultiplier),
+      blockchain: token.blockchain(),
+      network,
+    })
+
+  return new TxExecModel({
+    from: tx.from,
+    to: tx.to,
+    amount: new BigNumber(tx.value),
+    fee: new BigNumber(prepared.fee),
+    prepared: prepared.tx,
+    inputs: prepared.inputs,
+    outputs: prepared.outputs,
+  })
 }

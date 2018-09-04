@@ -38,8 +38,7 @@ import {
   EVENT_ERC20_TOKENS_COUNT,
   EVENT_NEW_ERC20_TOKEN,
 } from '../../dao/constants/ERC20ManagerDAO'
-import
-{
+import {
   NEM_DECIMALS,
   NEM_XEM_NAME,
   NEM_XEM_SYMBOL,

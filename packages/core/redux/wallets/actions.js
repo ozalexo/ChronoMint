@@ -34,7 +34,7 @@ import {
   SignerMemoryModel,
 } from '../../models'
 import { executeTransaction } from '../ethereum/thunks'
-import { executeBitccoinTransaction } from '../bitcoin/thunks'
+import { executeBitcoinTransaction } from '../bitcoin/thunks'
 import {
   WALLETS_SET,
   WALLETS_SET_NAME,
@@ -210,14 +210,21 @@ const updateAllowance = (allowance) => (dispatch, getState) => {
   }
 }
 
-export const mainTransfer = (wallet: WalletModel, token: TokenModel, amount: Amount, recipient: string, feeMultiplier: number = 1, advancedParams = null) => async (dispatch) => {
+export const mainTransfer = (
+  wallet: WalletModel,
+  token: TokenModel,
+  amount: Amount,
+  recipient: string,
+  feeMultiplier: number = 1,
+  advancedParams = null,
+) => async (dispatch) => {
   try {
     const tokenDAO = tokenService.getDAO(token.id())
     const tx = tokenDAO.transfer(wallet.address, recipient, amount)
     const executeMap = {
       [BLOCKCHAIN_ETHEREUM]: executeTransaction,
       [BLOCKCHAIN_NEM]: executeNemTransaction,
-      [BLOCKCHAIN_BITCOIN]: executeBitccoinTransaction,
+      [BLOCKCHAIN_BITCOIN]: executeBitcoinTransaction,
     }
 
     // execute

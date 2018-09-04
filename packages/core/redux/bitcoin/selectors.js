@@ -6,7 +6,8 @@
 import { createSelector } from 'reselect'
 import { DUCK_BITCOIN } from './constants'
 
-export const bitcoinSelector = () => (state) => state.get(DUCK_BITCOIN)
+export const bitcoinSelector = () => (state) =>
+  state.get(DUCK_BITCOIN)
 
 export const bitcoinPendingSelector = (blockchain) => createSelector(
   bitcoinSelector(),

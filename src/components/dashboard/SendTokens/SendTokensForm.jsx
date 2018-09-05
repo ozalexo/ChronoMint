@@ -31,7 +31,8 @@ import { FEE_RATE_MULTIPLIER } from '@chronobank/core/redux/mainWallet/constants
 import { DUCK_SESSION } from '@chronobank/core/redux/session/constants'
 import { getGasPriceMultiplier } from '@chronobank/core/redux/session/selectors'
 import { walletInfoSelector } from '@chronobank/core/redux/wallet/selectors/selectors'
-import { estimateBtcFee, estimateGasTransfer } from '@chronobank/core/redux/tokens/actions'
+import { estimateGasTransfer } from '@chronobank/core/redux/tokens/actions'
+import { estimateBtcFee } from '@chronobank/core/redux/bitcoin/thunks'
 import { DUCK_TOKENS } from '@chronobank/core/redux/tokens/constants'
 import { isBTCLikeBlockchain } from '@chronobank/core/redux/tokens/selectors'
 import inversedTheme from 'styles/themes/inversed'
@@ -136,6 +137,7 @@ export default class SendTokensForm extends PureComponent {
     this.timeout = null
   }
 
+  // eslint-disable-next-line complexity
   componentWillReceiveProps (newProps) {
     if ((newProps.token.address() !== this.props.token.address() || newProps.recipient !== this.props.recipient) && newProps.token.isERC20()) {
       this.props.dispatch(getSpendersAllowance(newProps.token.id(), newProps.recipient))
@@ -281,7 +283,7 @@ export default class SendTokensForm extends PureComponent {
           formFee,
           blockchain,
         }
-        this.props.estimateFee(params, (error, { fee }) => {
+        this.props.estimateFee(params, (error, fee) => {
           if (error) {
             this.setState({
               btcFeeError: true,

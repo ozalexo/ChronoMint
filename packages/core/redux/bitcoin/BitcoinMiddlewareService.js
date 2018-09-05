@@ -3,6 +3,8 @@
  * Licensed under the AGPL Version 3 license.
  */
 
+/** @module core/redux/bitcoin/BitcoinMiddlewareService */
+
 import axios from 'axios'
 import { BLOCKCHAIN_BITCOIN, BLOCKCHAIN_LITECOIN } from '../../dao/constants'
 
@@ -20,6 +22,7 @@ const URL_ADDRESS_INFO = (address) => `addr/${address}/balance`
 const URL_GET_UTXOS = (address) => `addr/${address}/utxo`
 const URL_SEND = 'tx/send'
 
+/** Class for HTTP requests to nodes in Testnet and Mainnet. */
 export default class BitcoinMiddlewareService {
   static service = {
     [BLOCKCHAIN_BITCOIN]: {
@@ -32,18 +35,22 @@ export default class BitcoinMiddlewareService {
     },
   }
 
-  /*
+  /**
+   * Generate Error with appropriate message
    * @private
+   * @return {Error} Error with details
    */
   static genErrorMessage (blockchain, type, requestName) {
     return new Error(`Can't perform HTTP(s) request '${requestName}'. Node for ${blockchain}/${type} not found in config.`)
   }
 
-  /*
+  /**
+   * Select current node to send HTTPS request (based on data from Redux store)
    * @private
+   * @return {Object} result of 'axios.create'
    */
-  static getCurrentNode (blockchain, type) {
-    return BitcoinMiddlewareService.service[blockchain] && BitcoinMiddlewareService.service[blockchain][type] || null
+  static getCurrentNode (blockchain, networkType) {
+    return BitcoinMiddlewareService.service[blockchain] && BitcoinMiddlewareService.service[blockchain][networkType] || null
   }
 
   static requestBitcoinCurrentBlockHeight (blockchain, networkType) {
@@ -59,6 +66,10 @@ export default class BitcoinMiddlewareService {
     })
   }
 
+  /**
+   * Request info about transaction by its ID (hash)
+   * @return {Promise} Axios GET request for further processing.
+   */
   static requestBitcoinTransactionInfo (txid, blockchain, networkType) {
     const currentNode = BitcoinMiddlewareService.getCurrentNode(blockchain, networkType)
     if (!currentNode) {
@@ -72,6 +83,10 @@ export default class BitcoinMiddlewareService {
     })
   }
 
+  /**
+   * Request list of a transactions for specified address
+   * @return {Promise} Axios GET request for further processing.
+   */
   static requestBitcoinTransactionsList (address, id, skip, offset, blockchain, networkType) {
     const currentNode = BitcoinMiddlewareService.getCurrentNode(blockchain, networkType)
     if (!currentNode) {
@@ -85,6 +100,10 @@ export default class BitcoinMiddlewareService {
     })
   }
 
+  /**
+   * Request info about specified address
+   * @return {Promise} Axios GET request for further processing.
+   */
   static requestBitcoinAddressInfo (address, blockchain, networkType) {
     const currentNode = BitcoinMiddlewareService.getCurrentNode(blockchain, networkType)
     if (!currentNode) {
@@ -98,6 +117,10 @@ export default class BitcoinMiddlewareService {
     })
   }
 
+  /**
+   * Request UTXOS for specified address
+   * @return {Promise} Axios GET request for further processing.
+   */
   static requestBitcoinAddressUTXOS (address, blockchain, networkType) {
     const currentNode = BitcoinMiddlewareService.getCurrentNode(blockchain, networkType)
     if (!currentNode) {
@@ -111,6 +134,10 @@ export default class BitcoinMiddlewareService {
     })
   }
 
+  /**
+   * Request sending of  preliminary prepared and signed transaction
+   * @return {Promise} Axios GET request for further processing.
+   */
   static requestBitcoinSendTx (rawtx, blockchain, networkType) {
     const currentNode = BitcoinMiddlewareService.getCurrentNode(blockchain, networkType)
     if (!currentNode) {

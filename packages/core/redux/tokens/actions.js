@@ -22,7 +22,6 @@ import { daoByType } from '../daos/selectors'
 import TxExecModel from '../../models/TxExecModel'
 import { web3Selector } from '../ethereum/selectors'
 import { estimateGas } from '../ethereum/thunks'
-import { getBtcFee } from '../bitcoin/utils'
 
 import { TRANSFER_CANCELLED } from '../../models/constants/TransferError'
 import { WATCHER_TX_SET } from '../watcher/constants'
@@ -57,7 +56,6 @@ import {
 } from '../../dao/constants/WavesDAO'
 import { DAOS_REGISTER } from '../daos/constants'
 import { ContractDAOModel, ContractModel } from '../../models'
-import { getSelectedNetwork } from '../persistAccount/selectors'
 
 const tokensInit = () => ({ type: TOKENS_INIT })
 
@@ -292,17 +290,6 @@ export const estimateGasTransfer = (tokenId, params, callback, gasPriceMultiplie
       gasLimit,
       gasFee: new Amount(gasFee.mul(gasPriceMultiplier).toString(), ETH),
       gasPrice: new Amount(gasPrice.mul(gasPriceMultiplier).toString(), ETH),
-    })
-  } catch (e) {
-    callback(e)
-  }
-}
-
-export const estimateBtcFee = (params, callback) => async (dispatch, getState) => {
-  const network = getSelectedNetwork()(getState())
-  try {
-    callback(null, {
-      fee: await getBtcFee({ ...params, network }),
     })
   } catch (e) {
     callback(e)

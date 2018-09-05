@@ -20,19 +20,21 @@ import { notify, notifyError } from '../notifier/actions'
 import BitcoinMiddlewareService from './BitcoinMiddlewareService'
 
 /**
- *
- * @param {tx} - Object {from ,to , value}
+ * Start sending transaction. It will be signed and sent.
+ * @param {tx} - Object {from, to, value}
  * @param {options} - Object {feeMultiplier, walletDerivedPath, symbol, advancedParams}
- * advancedParams is Object {satPerByte, mode}
- * mode is 'advanced'|'simple' (manual or automatic fee)
+ *   advancedParams is Object {satPerByte, mode}
+ *   mode is 'advanced'|'simple' (manual or automatic fee)
+ * @return {undefined}
  */
 export const executeBitcoinTransaction = ({ tx, options = {} }) => async (dispatch, getState) => {
   const state = getState()
   const token = getToken(options.symbol)(state)
   const blockchain = token.blockchain()
+  const network = getSelectedNetwork()(state)
   try {
     const utxos = await dispatch(getAddressUTXOS(tx.from, blockchain))
-    const prepared = await dispatch(BitcoinUtils.prepareBitcoinTransaction(tx, options))
+    const prepared = await dispatch(BitcoinUtils.prepareBitcoinTransaction(tx, token, network, utxos))
     const entry = BitcoinUtils.createBitcoinTxEntryModel({
       tx: prepared,
       blockchain,
@@ -43,7 +45,7 @@ export const executeBitcoinTransaction = ({ tx, options = {} }) => async (dispat
   } catch (error) {
     // And what to do now?
     // eslint-disable-next-line no-console
-    console.log('Can\'t get utxos.')
+    console.log('Can\'t get utxos.', error)
   }
 }
 
@@ -76,7 +78,7 @@ export const getCurrentBlockHeight = (blockchain: string) => (dispatch: Dispatch
 export const getTransactionInfo = (txid: string, blockchain: string) => (dispatch: Dispatch<any>, getState): Promise<*> => {
   if (!blockchain || !txid) {
     const error = new Error('Malformed request. "blockchain" and "txid" must be non-empty string')
-    dispatch(BitcoinActions.bitcoinHttpGetBlocksHeightFailure(error))
+    dispatch(BitcoinActions.bitcoinHttpGetTransactionInfoFailure(error))
     return Promise.reject(error)
   }
 
@@ -100,7 +102,7 @@ export const getTransactionInfo = (txid: string, blockchain: string) => (dispatc
 export const getTransactionsList = (address: string, id, skip = 0, offset = 0, blockchain: string) => (dispatch: Dispatch<any>, getState): Promise<*> => {
   if (!blockchain || !address || !id) {
     const error = new Error('Malformed request. blockchain and/or address must be non-empty strings')
-    dispatch(BitcoinActions.bitcoinHttpGetUtxosFailure(error))
+    dispatch(BitcoinActions.bitcoinHttpGetTransactionListFailure(error))
     return Promise.reject(error)
   }
 
@@ -124,7 +126,7 @@ export const getTransactionsList = (address: string, id, skip = 0, offset = 0, b
 export const getAddressInfo =  (address: string, blockchain: string) => (dispatch: Dispatch<any>, getState): Promise<*> => {
   if (!blockchain || !address) {
     const error = new Error('Malformed request. blockchain and/or address must be non-empty strings')
-    dispatch(BitcoinActions.bitcoinHttpGetUtxosFailure(error))
+    dispatch(BitcoinActions.bitcoinHttpGetAddressInfoFailure(error))
     return Promise.reject(error)
   }
 
@@ -232,6 +234,7 @@ const signTransaction = ({ entry, signer }) => async (dispatch, getState) => {
       const network = getSelectedNetwork()(state)
       const pk = signer.privateKey.substring(2, 66) // remove 0x
       const bitcoinNetwork = bitcoin.networks[network[entry.blockchain]]
+      // TODO: do we really need to create new wallet? maybe bitcore or other lib has appropriate method?
       const bitcoinSigner = BitcoinUtils.createBitcoinWalletFromPK(pk, bitcoinNetwork)
       signInputs(txb, tx.inputs, bitcoinSigner)
     }
@@ -321,3 +324,20 @@ const notifyBitcoinTransfer = (entry) => (dispatch, getState) => {
 }
 
 const notifyBitcoinError = (e, invoker) => notifyError(e, invoker)
+
+export const estimateBtcFee = (params, callback) => async (dispatch) => {
+  const {
+    address,
+    recipient,
+    amount,
+    formFee,
+    blockchain,
+  } = params
+  try {
+    const utxos = await dispatch(getAddressUTXOS(address, blockchain))
+    const fee = BitcoinUtils.getBtcFee(recipient, amount, formFee, utxos)
+    callback(null, fee)
+  } catch (e) {
+    callback(e)
+  }
+}

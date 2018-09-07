@@ -68,8 +68,6 @@ const initWalletsFromKeys = () => async (dispatch, getState) => {
 
   const ethereumSigner = getEthereumSigner(state)
   const ethAddress = await ethereumSigner.getAddress()
-  console.log('ethereumSigner: ', ethereumSigner, ethAddress)
-
   wallets.push(new WalletModel({
     address: ethAddress,
     blockchain: BLOCKCHAIN_ETHEREUM,
@@ -78,7 +76,6 @@ const initWalletsFromKeys = () => async (dispatch, getState) => {
   }))
 
   const bitcoinSigner = getBitcoinSigner(state)
-  console.log('bitcoinSigner: ', bitcoinSigner)
   if (bitcoinSigner) {
     wallets.push(new WalletModel({
       address: bitcoinSigner.getAddress(),
@@ -89,7 +86,6 @@ const initWalletsFromKeys = () => async (dispatch, getState) => {
   }
 
   const bitcoinCashSigner = getBitcoinCashSigner(state)
-  console.log('bitcoinCashSigner: ', bitcoinCashSigner)
   if (bitcoinCashSigner) {
     wallets.push(new WalletModel({
       address: bitcoinCashSigner.getAddress(),
@@ -100,7 +96,6 @@ const initWalletsFromKeys = () => async (dispatch, getState) => {
   }
 
   const litecoinSigner = getLitecoinSigner(state)
-  console.log('litecoinSigner: ', litecoinSigner)
   if (litecoinSigner) {
     wallets.push(new WalletModel({
       address: litecoinSigner.getAddress(),

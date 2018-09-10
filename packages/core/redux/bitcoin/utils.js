@@ -61,7 +61,6 @@ export const selectCoins = (to, amount: BigNumber, feeRate, utxos) => {
 ////////////////////////////////////////////////
 export const createBitcoinWalletFromPK = (privateKey, network, networkName) => {
   const btcPrivateKey = (privateKey.slice(0, 2) === '0x' && privateKey.length === 66) ? privateKey.substring(2, 66) : privateKey
-  console.log('createBitcoinWalletFromPK: fromPrivateKey: ', btcPrivateKey)
   const keyPair = new bitcoin.ECPair.fromPrivateKey(Buffer.from(btcPrivateKey, 'hex'), { network })
   return {
     keyPair,

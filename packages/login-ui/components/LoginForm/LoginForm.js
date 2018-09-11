@@ -107,7 +107,7 @@ class LoginForm extends React.Component {
   }
 
   renderDefaultTypeForm () {
-    const { classes, submitting, error } = this.props
+    const { classes, submitting, error, navigateToRecoverAccountPage } = this.props
 
     return (
       <div>

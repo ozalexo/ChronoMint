@@ -32,7 +32,7 @@
     "testrpc": "ganache-cli --mnemonic \"video visa alcohol fault earth naive army senior major inherit convince electric\" --trace_request true | grep -Ev \"FilterSubprovider|eth_getFilterChanges\""
   },
   "devDependencies": {
-    "@chronobank/api": "*",
+    "@chronobank/nodes": "*",
     "@chronobank/chronomint-presentation": "github:chronobank/ChronoMintPresentation",
     "@chronobank/core": "*",
     "@chronobank/login": "*",

@@ -26,7 +26,7 @@ import {
 } from 'components/constants'
 
 import { TOKEN_ICONS } from 'assets'
-import Immutable from 'immutable'
+import { Map } from 'immutable'
 import BigNumber from 'bignumber.js'
 import { CircularProgress, Paper } from '@material-ui/core'
 import PropTypes from 'prop-types'
@@ -167,7 +167,7 @@ export default class Bitcoin extends PureComponent {
   }
 
   handleRevoke = () => {
-    this.props.onSubmit(new Immutable.Map({
+    this.props.onSubmit(new Map({
       action: ACTION_APPROVE,
       symbol: this.props.token.symbol(),
       amount: 0,

@@ -19,7 +19,6 @@ import {
   WALLET_TYPE_TREZOR,
   WALLET_TYPE_METAMASK,
 } from '@chronobank/core/models/constants/AccountEntryModel'
-
 import {
   getAccountAddress,
   getAccountAvatar,
@@ -67,12 +66,10 @@ function mapDispatchToProps (dispatch) {
     },
     onSubmitFail: (errors, dispatch, submitErrors) => dispatch(onSubmitLoginFormFail(errors, submitErrors)),
     initLoginPage: () => dispatch(initLoginPage()),
-    navigateToSelectWallet: () => {
-      dispatch(navigateToSelectWallet())
-    },
+    navigateToSelectWallet: () => dispatch(navigateToSelectWallet()),
     navigateToRecoverAccountPage: () => dispatch(navigateToRecoverAccountPage()),
     initialValues: {
-      password: '123',
+      password: '',
     },
   }
 }
@@ -95,6 +92,7 @@ class LoginForm extends React.Component {
   }
 
   renderSuccessMessage = () => {
+    console.log('LoginForm renderSuccessMessage')
     const { successMessage } = this.props
 
     if (!successMessage) {
@@ -109,6 +107,7 @@ class LoginForm extends React.Component {
   }
 
   renderDefaultTypeForm = () => {
+    console.log('LoginForm renderDefaultTypeForm')
     const { classes, submitting, error, navigateToRecoverAccountPage } = this.props
 
     return (
@@ -132,9 +131,11 @@ class LoginForm extends React.Component {
             label={<Translate value='LoginForm.submitButton' />}
             isLoading={submitting}
           />
-
-          {error ? (<div styleName='form-error'>{error}</div>) : null}
-
+          {
+            error
+              ? (<div styleName='form-error'>{error}</div>)
+              : null
+          }
           <button onClick={navigateToRecoverAccountPage} styleName='link'>
             <Translate value='LoginForm.forgotPassword' />
           </button>
@@ -144,6 +145,7 @@ class LoginForm extends React.Component {
   }
 
   renderDeviceTypeForm = () => {
+    console.log('LoginForm renderDeviceTypeForm')
     const { error, submitting } = this.props
 
     return (
@@ -155,13 +157,17 @@ class LoginForm extends React.Component {
           label={<Translate value='LoginForm.submitButton' />}
           isLoading={submitting}
         />
-
-        {error ? (<div styleName='form-error'>{error}</div>) : null}
+        {
+          error
+            ? (<div styleName='form-error'>{error}</div>)
+            : null
+        }
       </div>
     )
   }
 
   renderType = () => {
+    console.log('LoginForm renderType')
     const { selectedWallet } = this.props
 
     if (!selectedWallet || !selectedWallet.type) {
@@ -188,7 +194,7 @@ class LoginForm extends React.Component {
       navigateToSelectWallet,
       selectedWallet,
     } = this.props
-
+    console.log('LoginForm render')
     return (
       <form styleName='form' name={FORM_LOGIN_PAGE} onSubmit={handleSubmit}>
         <div styleName='page-title'>
@@ -208,7 +214,9 @@ class LoginForm extends React.Component {
             linkTitle='My Accounts'
           />
 
-          {this.renderType()}
+          {
+            this.renderType()
+          }
 
         </div>
       </form>

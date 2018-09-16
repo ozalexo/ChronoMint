@@ -106,7 +106,6 @@ const initWalletsFromKeys = () => async (dispatch, getState) => {
   }
 
   const nemSigner = getNemSigner(state)
-  console.log('nemSigner: ', nemSigner, nemSigner.getAddress())
   if (nemSigner) {
     wallets.push(new WalletModel({
       address: nemSigner.getAddress(),

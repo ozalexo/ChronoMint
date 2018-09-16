@@ -94,7 +94,7 @@ class LoginForm extends React.Component {
     this.props.initLoginPage()
   }
 
-  renderSuccessMessage () {
+  renderSuccessMessage = () => {
     const { successMessage } = this.props
 
     if (!successMessage) {
@@ -108,7 +108,7 @@ class LoginForm extends React.Component {
     )
   }
 
-  renderDefaultTypeForm () {
+  renderDefaultTypeForm = () => {
     const { classes, submitting, error, navigateToRecoverAccountPage } = this.props
 
     return (
@@ -143,7 +143,7 @@ class LoginForm extends React.Component {
     )
   }
 
-  renderDeviceTypeForm () {
+  renderDeviceTypeForm = () => {
     const { error, submitting } = this.props
 
     return (
@@ -161,7 +161,7 @@ class LoginForm extends React.Component {
     )
   }
 
-  renderType () {
+  renderType = () => {
     const { selectedWallet } = this.props
 
     if (!selectedWallet || !selectedWallet.type) {

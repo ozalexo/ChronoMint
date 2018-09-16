@@ -12,13 +12,11 @@ import { describePendingWavesTx } from '../../describers'
 import { getSelectedNetwork } from '../persistAccount/selectors'
 
 export const executeWavesTransaction = ({ tx, options }) => async (dispatch, getState) => {
-  console.log('executeWavesTransaction: ', tx, options)
   const state = getState()
   const token = getToken(options.symbol)(state)
   const network = getSelectedNetwork()(state)
   const prepared = dispatch(WavesUtils.prepareWavesTransaction(tx, token, network))
   const entry = WavesUtils.createWavesTxEntryModel({ tx: prepared }, options)
-  console.log('entry: ', entry)
 
   await dispatch(WavesActions.wavesTxCreate(entry))
   dispatch(submitTransaction(entry, options))

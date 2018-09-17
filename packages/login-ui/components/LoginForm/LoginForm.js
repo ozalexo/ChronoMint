@@ -92,7 +92,6 @@ class LoginForm extends React.Component {
   }
 
   renderSuccessMessage = () => {
-    console.log('LoginForm renderSuccessMessage')
     const { successMessage } = this.props
 
     if (!successMessage) {
@@ -107,7 +106,6 @@ class LoginForm extends React.Component {
   }
 
   renderDefaultTypeForm = () => {
-    console.log('LoginForm renderDefaultTypeForm')
     const { classes, submitting, error, navigateToRecoverAccountPage } = this.props
 
     return (
@@ -145,7 +143,6 @@ class LoginForm extends React.Component {
   }
 
   renderDeviceTypeForm = () => {
-    console.log('LoginForm renderDeviceTypeForm')
     const { error, submitting } = this.props
 
     return (
@@ -167,7 +164,6 @@ class LoginForm extends React.Component {
   }
 
   renderType = () => {
-    console.log('LoginForm renderType')
     const { selectedWallet } = this.props
 
     if (!selectedWallet || !selectedWallet.type) {
@@ -194,7 +190,6 @@ class LoginForm extends React.Component {
       navigateToSelectWallet,
       selectedWallet,
     } = this.props
-    console.log('LoginForm render')
     return (
       <form styleName='form' name={FORM_LOGIN_PAGE} onSubmit={handleSubmit}>
         <div styleName='page-title'>

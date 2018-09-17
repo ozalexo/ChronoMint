@@ -136,3 +136,57 @@ export const requestBitcoinSendTx = (blockchain, params) => (dispatch) => {
       throw new Error(error)
     })
 }
+
+/**
+ * Start listening a wallet. Data will be arrived via web-socket.
+ * @param {string} blockchain Blockchain name, used to decide which Chronobank middleware will be connected
+ * @param {string} address Wallet's address
+ */
+export const requestBitcoinSubscribe = (blockchain, address) => (dispatch) => {
+  const action = {
+    type: 'REQ/GET/BITCOIN/SUBSCRIBE',
+    blockchain,
+    payload: {
+      request: {
+        method: 'POST',
+        url: `/addr`,
+        data: address,
+      },
+    },
+  }
+
+  return dispatch(action)
+    .then((result) => {
+      return result
+    })
+    .catch((error) => {
+      throw new Error(error)
+    })
+}
+
+/**
+ * Stop listening a wallet. Data will be arrived via web-socket.
+ * @param {string} blockchain Blockchain name, used to decide which Chronobank middleware will be connected
+ * @param {string} address Wallet's address
+ */
+export const requestBitcoinUnsubscribe = (blockchain, address) => (dispatch) => {
+  const action = {
+    type: 'REQ/GET/BITCOIN/UNSUBSCRIBE',
+    blockchain,
+    payload: {
+      request: {
+        method: 'DELETE',
+        url: `/addr`,
+        data: address,
+      },
+    },
+  }
+
+  return dispatch(action)
+    .then((result) => {
+      return result
+    })
+    .catch((error) => {
+      throw new Error(error)
+    })
+}

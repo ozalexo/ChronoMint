@@ -83,6 +83,15 @@ const mutations = {
   /**
    * Returns currently used web3 instance (Only for refactoring purposes, to be deleted in the future)
    */
+  [NodesActionTypes.NODES_PRIMARY_NODE_SET_EXTERNAL_PROVIDER]: (store, payload) => {
+    w3.currentProvider.connection.close()
+    w3 = payload.w3
+    w3.setProvider(payload.provider)
+  },
+
+  /**
+   * Returns currently used web3 instance (Only for refactoring purposes, to be deleted in the future)
+   */
   [NodesActionTypes.NODES_PRIMARY_NODE_GET_WEB3]: () => w3,
 
   /**

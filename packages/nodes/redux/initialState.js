@@ -7,6 +7,21 @@
  * TODO: To use i18n for sections/networks titles
  */
 
+import {
+  BLOCKCHAIN_BITCOIN_CASH,
+  BLOCKCHAIN_BITCOIN_GOLD,
+  BLOCKCHAIN_BITCOIN,
+  BLOCKCHAIN_LITECOIN,
+  BLOCKCHAIN_NEM,
+  BLOCKCHAIN_WAVES,
+  COIN_TYPE_BTC_MAINNET,
+  COIN_TYPE_BTC_TESTNET,
+  COIN_TYPE_BTG_MAINNET,
+  COIN_TYPE_BTG_TESTNET,
+  COIN_TYPE_LTC_MAINNET,
+  COIN_TYPE_LTC_TESTNET,
+} from '@chronobank/core/dao/constants'
+
 const MAINNET = 'mainnet'
 const TESTNET = 'testnet'
 
@@ -74,6 +89,60 @@ const availablePrimaryNodes = {
   custom: {},
 }
 
+const blockchainMainnet ={
+  [BLOCKCHAIN_BITCOIN_CASH]: {
+    bcNetworkId: 'bitcoin',
+    coinType: null,
+  },
+  [BLOCKCHAIN_BITCOIN_GOLD]: {
+    bcNetworkId: 'bitcoingold',
+    coinType: COIN_TYPE_BTG_MAINNET,
+  },
+  [BLOCKCHAIN_BITCOIN]: {
+    bcNetworkId: 'bitcoin',
+    coinType: COIN_TYPE_BTC_MAINNET,
+  },
+  [BLOCKCHAIN_LITECOIN]: {
+    bcNetworkId: 'litecoin',
+    coinType: COIN_TYPE_LTC_MAINNET,
+  },
+  [BLOCKCHAIN_NEM]: {
+    bcNetworkId: 'mainnet',
+    coinType: null,
+  },
+  [BLOCKCHAIN_WAVES]: {
+    bcNetworkId: 'MAINNET_CONFIG',
+    coinType: null,
+  },
+}
+
+const blockchainTestnet ={
+  [BLOCKCHAIN_BITCOIN_CASH]: {
+    bcNetworkId: 'testnet',
+    coinType: null,
+  },
+  [BLOCKCHAIN_BITCOIN_GOLD]: {
+    bcNetworkId: 'bitcoingold_testnet',
+    coinType: COIN_TYPE_BTG_TESTNET,
+  },
+  [BLOCKCHAIN_BITCOIN]: {
+    bcNetworkId: 'testnet',
+    coinType: COIN_TYPE_BTC_TESTNET,
+  },
+  [BLOCKCHAIN_LITECOIN]: {
+    bcNetworkId: 'litecoin_testnet',
+    coinType: COIN_TYPE_LTC_TESTNET,
+  },
+  [BLOCKCHAIN_NEM]: {
+    bcNetworkId: 'testnet',
+    coinType: null,
+  },
+  [BLOCKCHAIN_WAVES]: {
+    bcNetworkId: 'TESTNET_CONFIG',
+    coinType: null,
+  },
+}
+
 export default {
   displaySections: [
     {
@@ -112,6 +181,7 @@ export default {
   ],
   availableNetworks: [
     {
+      blockchain: blockchainMainnet,
       chronobankMiddlewares: availableChronoBankMiddlewares[MAINNET],
       networkId: 1,
       networkIndex: 0,
@@ -120,6 +190,7 @@ export default {
       primaryNode: availablePrimaryNodes[MAINNET].chronobank,
     },
     {
+      blockchain: blockchainMainnet,
       chronobankMiddlewares: availableChronoBankMiddlewares[MAINNET],
       networkId: 1,
       networkIndex: 1,
@@ -128,6 +199,7 @@ export default {
       primaryNode: availablePrimaryNodes[MAINNET].infura,
     },
     {
+      blockchain: blockchainTestnet,
       chronobankMiddlewares: availableChronoBankMiddlewares[TESTNET],
       networkId: 4,
       networkIndex: 2,
@@ -136,6 +208,7 @@ export default {
       primaryNode: availablePrimaryNodes[TESTNET].chronobank,
     },
     {
+      blockchain: blockchainTestnet,
       chronobankMiddlewares: availableChronoBankMiddlewares[TESTNET],
       networkId: 4,
       networkIndex: 3,

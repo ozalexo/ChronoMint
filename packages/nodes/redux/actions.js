@@ -9,6 +9,12 @@ export const nodesInit = () => ({
   type: NodesActionTypes.NODES_INIT,
 })
 
+export const primaryNodeSetExternalProvider = (w3, w3provider) => ({
+  type: NodesActionTypes.NODES_PRIMARY_NODE_SET_EXTERNAL_PROVIDER,
+  w3,
+  w3provider,
+})
+
 export const getWeb3Instance = () => ({
   type: NodesActionTypes.NODES_PRIMARY_NODE_GET_WEB3,
 })

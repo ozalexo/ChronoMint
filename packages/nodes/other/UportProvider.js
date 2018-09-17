@@ -6,12 +6,8 @@
 import { decode, isMNID } from 'mnid'
 import { Connect, QRUtil } from 'uport-connect'
 
-import { INFURA_TOKEN, UPORT_ID } from './settings'
-
-export type UPortAddress = {
-  address: string,
-  network: string
-}
+export const INFURA_TOKEN = 'PVe9zSjxTKIP3eAuAHFA'
+export const UPORT_ID = '0xfbbf28aaba3b2fc6dfe1a02b9833ccc90b8c4d26'
 
 class UportProvider {
   constructor () {
@@ -23,17 +19,16 @@ class UportProvider {
     })
   }
 
-  getUportProvider () {
-    return this._uportProvider
-  }
-
   static _customOpenQr (data, cancel) {
     QRUtil.openQr(data, cancel)
   }
 
-  decodeMNIDaddress (mnidAddress) {
-    return isMNID(mnidAddress) ? decode(mnidAddress) : 'null'
-  }
+  getUportProvider = () => this._uportProvider
+
+  decodeMNIDaddress = (mnidAddress) =>
+    isMNID(mnidAddress)
+      ? decode(mnidAddress)
+      : 'null'
 }
 
 export default new UportProvider()

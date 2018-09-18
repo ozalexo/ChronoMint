@@ -4,10 +4,10 @@
  */
 
 import Web3 from 'web3'
-import * as NodesActionTypes from './constants'
-import * as NodesActions from './actions'
-import * as NodesThunks from './thunks'
-import * as NodesSelectors from './selectors'
+import * as NodesActionTypes from '../redux/constants'
+import * as NodesActions from '../redux/actions'
+import * as NodesThunks from '../redux/thunks'
+import * as NodesSelectors from '../redux/selectors'
 
 let w3 = null
 let availableProviders = null
@@ -87,6 +87,13 @@ const mutations = {
     w3.currentProvider.connection.close()
     w3 = payload.w3
     w3.setProvider(payload.provider)
+  },
+
+  /**
+   * Returns currently used web3 instance (Only for refactoring purposes, to be deleted in the future)
+   */
+  [NodesActionTypes.NODES_PRIMARY_NODE_SYNC_STATUS_STOP]: (store) => {
+    stopSyncTimer(store.dispatch)
   },
 
   /**

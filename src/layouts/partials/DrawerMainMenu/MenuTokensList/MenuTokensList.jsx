@@ -7,7 +7,6 @@ import { selectCurrentNetworkTitle } from '@chronobank/nodes/redux/selectors'
 import { Translate, I18n } from 'react-redux-i18n'
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
-import { DUCK_MONITOR } from '@chronobank/login/redux/monitor/constants'
 import React, { PureComponent } from 'react'
 import { connect } from 'react-redux'
 import { drawerHide, drawerToggle } from 'redux/drawer/actions'
@@ -25,13 +24,10 @@ function makeMapStateToProps (state) {
   const currentNetworkName = selectCurrentNetworkTitle(state)
   const mapStateToProps = (ownState) => {
     const session = ownState.get(DUCK_SESSION)
-    const monitor = ownState.get(DUCK_MONITOR)
     return {
       currentNetworkName,
       account: session.account,
       tokens: getwallets(ownState),
-      networkStatus: monitor.network,
-      syncStatus: monitor.sync,
     }
   }
   return mapStateToProps

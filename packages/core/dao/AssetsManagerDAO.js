@@ -4,7 +4,7 @@
  */
 
 import { Map, List } from 'immutable'
-import { ethereumProvider } from '@chronobank/login/network/EthereumProvider'
+// import { ethereumProvider } from '@chronobank/login/network/EthereumProvider'
 import { unionBy } from 'lodash'
 import OwnerCollection from '../models/wallet/OwnerCollection'
 import OwnerModel from '../models/wallet/OwnerModel'

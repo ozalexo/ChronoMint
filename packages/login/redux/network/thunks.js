@@ -12,9 +12,6 @@ import {
 import web3Converter from '@chronobank/core/utils/Web3Converter'
 import uportProvider from '@chronobank/nodes/other/UportProvider'
 import { primaryNodeSetExternalProvider } from '@chronobank/nodes/redux/actions'
-import {
-  DUCK_NETWORK,
-} from './constants'
 import * as NetworkActions from './actions'
 
 /*
@@ -61,14 +58,13 @@ export const initAccountsSignature = () =>
   async (dispatch, getState) => {
     const state = getState()
 
-    const { loadingAccountSignatures } = state.get(DUCK_NETWORK)
-    const { walletsList } = state.get(DUCK_PERSIST_ACCOUNT)
+    const { walletsList, isLoadingSignatures } = state.get(DUCK_PERSIST_ACCOUNT)
 
-    if (loadingAccountSignatures || !walletsList.length) {
+    if (isLoadingSignatures || !walletsList.length) {
       return
     }
 
-    dispatch(NetworkActions.loadingAccountsSignatures())
+    dispatch(PersistAccountActions.setSiganturesLoading())
 
     const accounts = await dispatch(PersistAccountActions.setProfilesForAccounts(walletsList))
 
@@ -77,7 +73,7 @@ export const initAccountsSignature = () =>
     )
 
     dispatch(updateSelectedAccount())
-    dispatch(NetworkActions.resetLoadingAccountsSignatures())
+    dispatch(PersistAccountActions.setSiganturesLoadingReset())
   }
 
 /*
@@ -97,13 +93,6 @@ export const initRecoverAccountPage = () => (dispatch) => {
 export const selectProviderWithNetwork = (networkId, providerId) => (dispatch) => {
   dispatch(NetworkActions.networkSetProvider(providerId))
   dispatch(NetworkActions.networkSetNetwork(networkId))
-}
-
-// TODO: actually, this method does not used. It is wrong. Need to be used
-export const isMetaMask = () => (dispatch, getState) => {
-  const state = getState()
-  const network = state.get(DUCK_NETWORK)
-  return network.isMetamask
 }
 
 export const loginUport = () => async (dispatch) => {

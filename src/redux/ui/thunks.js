@@ -3,7 +3,7 @@
  * Licensed under the AGPL Version 3 license.
  */
 
-import { destroyNetworkSession, login, logout } from '@chronobank/core/redux/session/thunks'
+import { login, logout } from '@chronobank/core/redux/session/thunks'
 import { change, formValueSelector } from 'redux-form/immutable'
 import { navigateToVoting, navigateToRoot, navigateToWallets, navigateToPoll, navigateBack } from 'redux/ui/navigation'
 import { removeWatchersUserMonitor } from '@chronobank/login-ui/redux/thunks'
@@ -15,6 +15,9 @@ import type PollDetailsModel from '@chronobank/core/models/PollDetailsModel'
 import {
   FORM_ADD_NEW_WALLET,
 } from '@chronobank/core/redux/mainWallet/constants'
+
+// REFACTORING:
+const destroyNetworkSession = () => {}
 
 const destroyNetworkSessionInLocalStorage = (isReset = true) => (dispatch) => {
   dispatch(destroyNetworkSession(isReset))

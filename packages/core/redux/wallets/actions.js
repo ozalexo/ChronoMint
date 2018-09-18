@@ -3,7 +3,6 @@
  * Licensed under the AGPL Version 3 license.
  */
 
-import { bccProvider, btcProvider, btgProvider, ltcProvider } from '@chronobank/login/network/BitcoinProvider'
 import {
   BLOCKCHAIN_BITCOIN,
   BLOCKCHAIN_BITCOIN_CASH,
@@ -13,8 +12,9 @@ import {
   BLOCKCHAIN_NEM,
   BLOCKCHAIN_WAVES,
   WALLET_HD_PATH,
-} from '@chronobank/login/network/constants'
+} from '@chronobank/core/dao/constants'
 import { ethereumProvider } from '@chronobank/login/network/EthereumProvider'
+import * as NodesSelector from '@chronobank/nodes/redux/selectors'
 import WalletModel from '../../models/wallet/WalletModel'
 import { subscribeOnTokens } from '../tokens/thunks'
 import { formatBalances, getWalletBalances } from '../tokens/utils'
@@ -32,6 +32,7 @@ import { AllowanceCollection } from '../../models'
 import { executeTransaction } from '../ethereum/thunks'
 import { executeWavesTransaction } from '../waves/thunks'
 import * as BitcoinThunks from '../bitcoin/thunks'
+import * as WalletUtils from './utils'
 import {
   WALLETS_SET,
   WALLETS_SET_NAME,
@@ -138,34 +139,39 @@ const initDerivedWallets = () => async (dispatch, getState) => {
   const state = getState()
   const account = getAccount(state)
   const wallets = getWallets(state)
+  const privateKey = account.decryptedWallet.privateKey
 
-  Object.values(wallets).forEach((wallet: WalletModel) => {
-    if (wallet.isDerived && !wallet.isMain && isOwner(wallet, account)) {
-      dispatch(updateWalletBalance({ wallet }))
+  Object.values(wallets)
+    .forEach((wallet: WalletModel) => {
+      if (wallet.isDerived && !wallet.isMain && isOwner(wallet, account)) {
+        const deriveNumber = wallet.deriveNumber
+        // const address = wallet.address
+        const blockchain = wallet.blockchain
+        const coinType = NodesSelector.selectCoinType(blockchain)
+        const bcNetworkId = NodesSelector.selectBlockchainNetworkId(blockchain)
 
-      switch (wallet.blockchain) {
-        case BLOCKCHAIN_BITCOIN:
-          btcProvider.createNewChildAddress(wallet.deriveNumber)
-          btcProvider.subscribeNewWallet(wallet.address)
-          break
-        case BLOCKCHAIN_BITCOIN_CASH:
-          bccProvider.createNewChildAddress(wallet.deriveNumber)
-          bccProvider.subscribeNewWallet(wallet.address)
-          break
-        case BLOCKCHAIN_BITCOIN_GOLD:
-          btgProvider.createNewChildAddress(wallet.deriveNumber)
-          btgProvider.subscribeNewWallet(wallet.address)
-          break
-        case BLOCKCHAIN_LITECOIN:
-          ltcProvider.createNewChildAddress(wallet.deriveNumber)
-          ltcProvider.subscribeNewWallet(wallet.address)
-          break
-        case BLOCKCHAIN_ETHEREUM:
-          break
-        default:
+        dispatch(updateWalletBalance({ wallet }))
+        // const derivedWallet = WalletUtils.createNewChildAddress(deriveNumber, blockchain, coinType, bcNetworkId, privateKey)
+
+        switch (wallet.blockchain) {
+          case BLOCKCHAIN_BITCOIN:
+            btcProvider.subscribeNewWallet(wallet.address)
+            break
+          case BLOCKCHAIN_BITCOIN_CASH:
+            bccProvider.subscribeNewWallet(wallet.address)
+            break
+          case BLOCKCHAIN_BITCOIN_GOLD:
+            btgProvider.subscribeNewWallet(wallet.address)
+            break
+          case BLOCKCHAIN_LITECOIN:
+            ltcProvider.subscribeNewWallet(wallet.address)
+            break
+          case BLOCKCHAIN_ETHEREUM:
+            break
+          default:
+        }
       }
-    }
-  })
+    })
 }
 
 const fallbackCallback = (wallet) => (dispatch) => {

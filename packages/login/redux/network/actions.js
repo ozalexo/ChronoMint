@@ -6,8 +6,6 @@
  */
 
 import {
-  NETWORK_ACCOUNTS_SIGNATURES_LOADING,
-  NETWORK_ACCOUNTS_SIGNATURES_RESET_LOADING,
   NETWORK_ADD_ERROR,
   NETWORK_CLEAR_ERRORS,
   NETWORK_LOADING,
@@ -93,14 +91,6 @@ export const networkResetWalletFileImported = () => ({
 
 export const networkResetLoginSubmitting = () => ({
   type: NETWORK_RESET_LOGIN_SUBMITTING,
-})
-
-export const loadingAccountsSignatures = () => ({
-  type: NETWORK_ACCOUNTS_SIGNATURES_LOADING,
-})
-
-export const resetLoadingAccountsSignatures = () => ({
-  type: NETWORK_ACCOUNTS_SIGNATURES_RESET_LOADING,
 })
 
 export const networkSetNewMnemonic = (mnemonic) => ({

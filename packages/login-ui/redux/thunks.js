@@ -10,7 +10,6 @@ import {
   stopSubmit,
   SubmissionError,
 } from 'redux-form'
-import { MOCK_PRIVATE_KEY } from '@chronobank/core/services/signers/BitcoinLedgerDeviceMock'
 import {
   WALLET_TYPE_MEMORY,
   WALLET_TYPE_TREZOR,
@@ -21,9 +20,6 @@ import {
 import { AccountEntryModel } from '@chronobank/core/models/wallet/persistAccount'
 import { getEthereumSigner } from '@chronobank/core/redux/persistAccount/selectors'
 import * as NetworkActions from '@chronobank/login/redux/network/actions'
-import privateKeyProvider from '@chronobank/login/network/privateKeyProvider'
-import setup from '@chronobank/login/network/EngineUtils'
-import { selectCurrentNetworkType } from '@chronobank/nodes/redux/selectors'
 import {
   DUCK_NETWORK,
 } from '@chronobank/login/redux/network/constants'
@@ -35,7 +31,6 @@ import * as SessionThunks from '@chronobank/core/redux/session/thunks'
 import { modalsOpen, modalsClose } from '@chronobank/core/redux/modals/actions'
 import * as PersistAccountActions from '@chronobank/core/redux/persistAccount/actions'
 import * as DeviceActions from '@chronobank/core/redux/device/actions'
-// import PublicBackendProvider from '@chronobank/login/network/PublicBackendProvider'
 import { subscribeNews } from '@chronobank/nodes/httpNodes/api/backend_chronobank'
 import {
   createAccountEntry,
@@ -95,14 +90,6 @@ export const onSubmitLoginForm = (password) => async (dispatch, getState) => {
         const signer = getEthereumSigner(getState())
         await dispatch(SessionThunks.getProfileSignature(signer, accountWallet.encrypted[0].path))
 
-        //////////////////////////////////////////////////////
-        //// @todo remove after providers/engine refactoring
-        const providerSettings = dispatch(SessionThunks.getProviderSettings())
-        const networkType = selectCurrentNetworkType(state)
-        const provider = privateKeyProvider.getPrivateKeyProvider(wallet.privateKey.slice(2, 66), { ...providerSettings, networkType })
-        await setup(provider)
-        //////////////////////////////////////////////////////
-
         dispatch(NetworkActions.selectAccount(accountWallet.address))
 
         const {
@@ -135,13 +122,6 @@ export const onSubmitLoginForm = (password) => async (dispatch, getState) => {
         const wallet = await dispatch(DeviceActions.loadDeviceAccount(accountWallet))
         const signer = getEthereumSigner(getState())
         await dispatch(SessionThunks.getProfileSignature(signer, wallet.entry.encrypted[0].path))
-
-        //////////////////////////////////////////////////////
-        //// @todo remove after providers/engine refactoring
-        const providerSettings = dispatch(SessionThunks.getProviderSettings())
-        const provider = privateKeyProvider.getPrivateKeyProvider(`${MOCK_PRIVATE_KEY}`, providerSettings)
-        await setup(provider)
-        //////////////////////////////////////////////////////
 
         dispatch(NetworkActions.selectAccount(wallet.entry.encrypted[0].address))
 

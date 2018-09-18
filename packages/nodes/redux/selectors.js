@@ -24,6 +24,16 @@ export const selectCurrentNetwork = createSelector(
 )
 
 /**
+ * get nodes.selected.blockchain
+ * @param {Map} state
+ */
+export const selectCurrentNetworkBlockchains = createSelector(
+  selectNodesState,
+  (nodesState) =>
+    nodesState.selected.blockchain
+)
+
+/**
  * get nodes.selected.blockchain[blockchainId]
  * @param {string} blockchainId
  */
@@ -66,6 +76,18 @@ export const selectCurrentPrimaryNode = createSelector(
   selectCurrentNetwork,
   (currentNetwork) =>
     currentNetwork && currentNetwork.primaryNode
+)
+
+export const selectCurrentPrimaryNodeStatus = createSelector(
+  selectCurrentPrimaryNode,
+  (currentPrimaryNode) =>
+    currentPrimaryNode && currentPrimaryNode.isOnline
+)
+
+export const selectCurrentPrimaryNodeSyncingStatus = createSelector(
+  selectCurrentPrimaryNode,
+  (currentPrimaryNode) =>
+    currentPrimaryNode && currentPrimaryNode.isSyncing
 )
 
 const MAINNET = 'mainnet'

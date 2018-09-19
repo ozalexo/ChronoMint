@@ -4,7 +4,6 @@
  */
 
 import BigNumber from 'bignumber.js'
-import { ethereumProvider } from '@chronobank/login/network/EthereumProvider'
 import type MultisigWalletDAO from '../../dao/MultisigWalletDAO'
 import { EE_MS_WALLET_ADDED, EE_MS_WALLET_REMOVED, EE_MS_WALLETS_COUNT } from '../../dao/constants/WalletsManagerDAO'
 import Amount from '../../models/Amount'
@@ -15,7 +14,7 @@ import OwnerModel from '../../models/wallet/OwnerModel'
 import { notify, notifyError } from '../notifier/actions'
 import { DUCK_SESSION } from '../session/constants'
 import { subscribeOnTokens } from '../tokens/thunks'
-import { formatBalances, getWalletBalances } from '../tokens/utils'
+import { formatBalances } from '../tokens/utils'
 import {
   EE_CONFIRMATION,
   EE_CONFIRMATION_NEEDED,

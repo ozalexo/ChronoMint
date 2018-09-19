@@ -4,6 +4,7 @@
  */
 import * as BitcoinMiddlewaresAPI from '@chronobank/nodes/httpNodes/api/chronobankNodes/bitcoins'
 import WavesDAO from '@chronobank/core/dao/WavesDAO'
+import * as NemMiddlewareApi from '@chronobank/nodes/httpNodes/api/chronobankNodes/nem'
 import { bccDAO, btcDAO, btgDAO, ltcDAO } from '../../dao/BitcoinDAO'
 import ERC20ManagerDAO from '../../dao/ERC20ManagerDAO'
 import ethereumDAO from '../../dao/EthereumDAO'
@@ -14,7 +15,7 @@ import Amount from '../../models/Amount'
 import { daoByType } from '../daos/selectors'
 import { web3Selector } from '../ethereum/selectors'
 import { estimateGas } from '../ethereum/thunks'
-
+import { selectWalletAddressByBlockchain } from '../wallets/selectors/wallets'
 import {
   DUCK_TOKENS,
 } from './constants'
@@ -29,6 +30,7 @@ import {
 } from '../../dao/constants/NemDAO'
 import {
   BLOCKCHAIN_ETHEREUM,
+  BLOCKCHAIN_NEM,
   ETH,
   EVENT_NEW_BLOCK,
   EVENT_NEW_TOKEN,
@@ -128,7 +130,7 @@ export const initNemTokens = () => async (dispatch, getState) => {
     const currentCount = getState().get(DUCK_TOKENS).leftToFetch()
     dispatch(TokensActions.setTokensFetchingCount(currentCount + 1))
 
-    const dao = new NemDAO(NEM_XEM_NAME, NEM_XEM_SYMBOL, nemProvider, NEM_DECIMALS)
+    const dao = new NemDAO(NEM_XEM_NAME, NEM_XEM_SYMBOL, NEM_DECIMALS, dispatch)
     const nem = await dao.fetchToken()
     tokenService.registerDAO(nem, dao)
     dispatch(TokensActions.tokenFetched(nem))
@@ -139,13 +141,34 @@ export const initNemTokens = () => async (dispatch, getState) => {
 }
 
 export const initNemMosaicTokens = (nem: TokenModel) => async (dispatch, getState) => {
-  const mosaics = nemProvider.getMosaics()
+  const mosaics = [{
+    definition: {
+      creator: 'cb60520c740f867ea01a60e662e833a5f7f9d3070fdf23cdcf903d6abc1cdd52',
+      description: 'chronobank bonus minutes',
+      id: {
+        namespaceId: 'chronobank',
+        name: 'minute',
+      },
+      properties: [
+        { name: 'divisibility', value: '2' },
+        { name: 'initialSupply', value: '100000' },
+        { name: 'supplyMutable', value: 'true' },
+        { name: 'transferable', value: 'true' },
+      ],
+      levy: {},
+    },
+    namespace: 'cb:minutes',
+    decimals: 2,
+    name: 'XMIN',
+    title: 'Minutes',
+    symbol: 'XMIN',
+  }]
   const currentCount = getState().get(DUCK_TOKENS).leftToFetch()
   dispatch(TokensActions.setTokensFetchingCount(currentCount + mosaics.length))
   // do not wait until initialized, it is ok to lazy load all the tokens
   return Promise.all(
     mosaics
-      .map((m) => new NemDAO(m.name, m.symbol, nemProvider, m.decimals, m.definition, nem))
+      .map((m) => new NemDAO(m.name, m.symbol, m.decimals, m.definition, nem, dispatch))
       .map(async (dao) => {
         try {
           const token = await dao.fetchToken()
@@ -162,7 +185,7 @@ export const initWavesTokens = () => async (dispatch, getState) => {
   try {
     const currentCount = getState().get(DUCK_TOKENS).leftToFetch()
     dispatch(TokensActions.setTokensFetchingCount(currentCount + 1))
-    const dao = new WavesDAO(WAVES_WAVES_NAME, WAVES_WAVES_SYMBOL, wavesProvider, WAVES_DECIMALS, 'WAVES')
+    const dao = new WavesDAO(WAVES_WAVES_NAME, WAVES_WAVES_SYMBOL, WAVES_DECIMALS, 'WAVES', dispatch)
     const waves = await dao.fetchToken()
     tokenService.registerDAO(waves, dao)
     dispatch(TokensActions.tokenFetched(waves))
@@ -173,13 +196,15 @@ export const initWavesTokens = () => async (dispatch, getState) => {
 }
 
 export const initWavesAssetTokens = (waves: TokenModel) => async (dispatch, getState) => {
-  const assets = await wavesProvider.getAssets()
+  const state = getState()
+  const { address } = selectWalletAddressByBlockchain(BLOCKCHAIN_NEM)(state)
+  const { assets } = await dispatch(NemMiddlewareApi.requestNemBalanceByAddress(address))
   const currentCount = getState().get(DUCK_TOKENS).leftToFetch()
   dispatch(TokensActions.setTokensFetchingCount(currentCount + Object.keys(assets).length))
   // do not wait until initialized, it is ok to lazy load all the tokens
   return Promise.all(
     Object.keys(assets)
-      .map((m) => new WavesDAO(m, m, wavesProvider, assets[m]['decimals'], assets[m]['id'], waves))
+      .map((m) => new WavesDAO(m, m, assets[m]['decimals'], assets[m]['id'], waves, dispatch))
       .map(async (dao) => {
         try {
           const token = await dao.fetchToken()

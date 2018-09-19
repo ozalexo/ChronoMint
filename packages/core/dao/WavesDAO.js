@@ -26,13 +26,12 @@ const EVENT_BALANCE = 'balance'
 
 export default class WavesDAO extends EventEmitter {
 
-  constructor (name, symbol, wavesProvider, decimals, asset, wavesToken) {
+  constructor (name, symbol, decimals, asset, wavesToken, dispatch) {
     super()
     this._name = name
     this._symbol = symbol
     this._decimals = decimals
     this._asset = asset
-    this._wavesProvider = wavesProvider
     this._wavesToken = wavesToken
   }
 

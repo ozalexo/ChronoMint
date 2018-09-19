@@ -8,6 +8,7 @@ import * as NodesActionTypes from '../redux/constants'
 import * as NodesActions from '../redux/actions'
 import * as NodesThunks from '../redux/thunks'
 import * as NodesSelectors from '../redux/selectors'
+import * as contracts from './contracts'
 
 let w3 = null
 let availableProviders = null

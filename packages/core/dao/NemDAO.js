@@ -17,7 +17,7 @@ const EVENT_BALANCE = 'balance'
 
 export default class NemDAO extends EventEmitter {
 
-  constructor (name, symbol, nemProvider, decimals, mosaic, nemToken) {
+  constructor (name, symbol, decimals, mosaic, nemToken, dispatch) {
     super()
     // nemToken only available for mosaics, it should be used as a fee token
     this._nemToken = nemToken
@@ -26,7 +26,6 @@ export default class NemDAO extends EventEmitter {
     this._namespace = mosaic ? `${mosaic.id.namespaceId}:${mosaic.id.name}` : null
     this._decimals = decimals
     this._mosaic = mosaic
-    this._nemProvider = nemProvider
   }
 
   getAddressValidator () {

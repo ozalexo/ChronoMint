@@ -5,9 +5,11 @@
 
 import BigNumber from 'bignumber.js'
 import bitcoin from 'bitcoinjs-lib'
+import BitcoinsMiddlewareAPI from '@chronobank/nodes/httpNodes/api/chronobankNodes/bitcoins'
 import EventEmitter from 'events'
 import Amount from '../models/Amount'
 import TokenModel from '../models/tokens/TokenModel'
+import { onNewTransferReceived } from '../redux/wallets/thunks'
 import TxModel from '../models/TxModel'
 import {
   BLOCKCHAIN_BITCOIN,
@@ -75,7 +77,15 @@ export default class BitcoinDAO extends EventEmitter {
   }
 
   getAccountBalances (address) {
-    return this._bitcoinProvider.getAccountBalances(address)
+    try {
+      const balances = this.dispatch(BitcoinsMiddlewareAPI.requestBitcoinBalanceByAddress(this._blockchainName, address))
+      return balances
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log('BitcoinDAO, getAccountBalances', error)
+      return null
+      // TODO: need to handle an error correctly
+    }
   }
 
   getAccountBalance (address) {
@@ -93,7 +103,7 @@ export default class BitcoinDAO extends EventEmitter {
   async getTransfer (id, account, skip, offset): Array<TxModel> {
     const txs = []
     try {
-      const txsResult = await this._bitcoinProvider.getTransactionsList(account, skip, offset)
+      const txsResult = await this.dispatch(BitcoinsMiddlewareAPI.requestBitcoinTransactionsHistoryByAddress(this._blockchainName, account, skip, offset))
       for (const tx of txsResult) {
         txs.push(new TxModel({
           txHash: tx.txHash,
@@ -202,7 +212,7 @@ export default class BitcoinDAO extends EventEmitter {
   }
 
   subscribeNewWallet (address) {
-    this._bitcoinProvider.subscribeNewWallet(address)
+    this.dispatch(BitcoinsMiddlewareAPI.requestBitcoinSubscribeWalletByAddress(this._blockchainName, address))
   }
 }
 

@@ -3,6 +3,11 @@
  * Licensed under the AGPL Version 3 license.
  */
 
+/**
+ * Copyright 2017–2018, LaborX PTY
+ * Licensed under the AGPL Version 3 license.
+ */
+
 import {
   BLOCKCHAIN_BITCOIN_CASH,
   BLOCKCHAIN_BITCOIN_GOLD,
@@ -17,7 +22,11 @@ import {
   COIN_TYPE_LTC_TESTNET,
   WALLET_HD_PATH,
 } from '@chronobank/core/dao/constants'
+import bitcoin from 'bitcoinjs-lib'
 import * as BitcoinMiddlewaresAPI from '@chronobank/nodes/httpNodes/api/chronobankNodes/bitcoins'
+import * as NemMiddlewaresAPI from '@chronobank/nodes/httpNodes/api/chronobankNodes/nem'
+import * as WavesMiddlewaresAPI from '@chronobank/nodes/httpNodes/api/chronobankNodes/waves'
+import * as EthMiddlewaresAPI from '@chronobank/nodes/httpNodes/api/chronobankNodes/erc20'
 import WalletModel from '../../models/wallet/WalletModel'
 import { subscribeOnTokens } from '../tokens/thunks'
 import { formatBalances } from '../tokens/utils'
@@ -35,40 +44,13 @@ import { AllowanceCollection } from '../../models'
 import { executeTransaction } from '../ethereum/thunks'
 import { executeWavesTransaction } from '../waves/thunks'
 import * as BitcoinThunks from '../bitcoin/thunks'
-import {
-  WALLETS_SET,
-  WALLETS_SET_NAME,
-  WALLETS_UPDATE_BALANCE,
-  WALLETS_UPDATE_WALLET,
-} from './constants'
 import { executeNemTransaction } from '../nem/thunks'
 import { getPersistAccount, getEthereumSigner } from '../persistAccount/selectors'
 import { getBitcoinCashSigner, getBitcoinSigner, getLitecoinSigner } from '../bitcoin/selectors'
 import { getNemSigner } from '../nem/selectors'
 import { getWavesSigner } from '../waves/selectors'
 import { isOwner } from './utils'
-
-export const setWalletName = (walletId, name) => ({
-  type: WALLETS_SET_NAME,
-  walletId,
-  name,
-})
-
-export const setWallet = (wallet) => ({
-  type: WALLETS_SET,
-  wallet,
-})
-
-export const setWalletBalance = (walletId, balance) => ({
-  type: WALLETS_UPDATE_BALANCE,
-  walletId,
-  balance,
-})
-
-export const updateWallet = (wallet) => ({
-  type: WALLETS_UPDATE_WALLET,
-  wallet,
-})
+import * as WalletsActions from './actions'
 
 export const initWallets = () => (dispatch) => {
   dispatch(initWalletsFromKeys())
@@ -141,7 +123,7 @@ const initWalletsFromKeys = () => async (dispatch, getState) => {
   }
 
   wallets.forEach((wallet) => {
-    dispatch(setWallet(wallet))
+    dispatch(WalletsActions.setWallet(wallet))
     dispatch(updateWalletBalance({ wallet }))
   })
 }
@@ -184,10 +166,9 @@ const initDerivedWallets = () => async (dispatch, getState) => {
 const fallbackCallback = (wallet) => (dispatch) => {
   const updateBalance = (token: TokenModel) => async () => {
     if (token.blockchain() === wallet.blockchain) {
-      const dao = tokenService.getDAO(token)
-      const balance = await dao.getAccountBalance(wallet.address)
+      const balance = await dispatch(NemMiddlewaresAPI.requestNemBalanceByAddress(wallet.address))
       if (balance) {
-        dispatch(setWalletBalance(wallet.id, new Amount(balance, token.symbol(), true)))
+        dispatch(WalletsActions.setWalletBalance(wallet.id, new Amount(balance, token.symbol(), true)))
       }
     }
   }
@@ -208,7 +189,7 @@ const updateWalletBalance = ({ wallet }) => async (dispatch) => {
     || blockchain === BLOCKCHAIN_BITCOIN_GOLD
 
   if (isBtcLikeBlockchain) {
-    return dispatch(BitcoinThunks.getAddressInfo(address, blockchain))
+    return dispatch(BitcoinMiddlewaresAPI.requestBitcoinBalanceByAddress(blockchain, address))
       .then((balancesResult) => {
         const formattedBalances = formatBalances(blockchain, balancesResult)
         const newWallet = new WalletModel({
@@ -218,7 +199,7 @@ const updateWalletBalance = ({ wallet }) => async (dispatch) => {
             ...formattedBalances,
           },
         })
-        dispatch(setWallet(newWallet))
+        dispatch(WalletsActions.setWallet(newWallet))
       })
       .catch((e) => {
         // eslint-disable-next-line no-console
@@ -226,10 +207,22 @@ const updateWalletBalance = ({ wallet }) => async (dispatch) => {
         dispatch(fallbackCallback(wallet))
       })
   } else {
-    getWalletBalances({ wallet })
+    const { address, blockchain } = wallet
+    let balanceRequest = null
+    switch (blockchain) {
+      case BLOCKCHAIN_WAVES: {
+        balanceRequest = WavesMiddlewaresAPI.requestWavesBalanceByAddress
+        break
+      }
+      case BLOCKCHAIN_ETHEREUM: {
+        balanceRequest = EthMiddlewaresAPI.requestNemBalanceByAddress
+        break
+      }
+    }
+    dispatch(balanceRequest(address))
       .then((balancesResult) => {
         try {
-          dispatch(setWallet(new WalletModel({
+          dispatch(WalletsActions.setWallet(new WalletModel({
             ...wallet,
             balances: {
               ...wallet.balances,
@@ -282,20 +275,18 @@ export const unsubscribeWallet = ({ wallet, listener }) => async (/*dispatch, ge
 }
 
 const updateAllowance = (allowance) => (dispatch, getState) => {
-  const wallet = getMainEthWallet(getState())
+  let wallet = getMainEthWallet(getState())
   if (allowance) {
-    dispatch({
-      type: WALLETS_UPDATE_WALLET,
-      wallet: new WalletModel({
-        ...wallet,
-        allowances: new AllowanceCollection({
-          list: {
-            ...wallet.allowances.list,
-            [allowance.id()]: allowance,
-          },
-        }),
-      }),
+    wallet = new WalletModel({
+      ...wallet,
+      allowances: new AllowanceCollection({
+        list: {
+          ...wallet.allowances.list,
+          [allowance.id()]: allowance,
+        },
+      })
     })
+    dispatch(WalletsActions.updateWallet(wallet))
   }
 }
 
@@ -372,106 +363,4 @@ export const mainRevoke = (token: TokenModel, spender: string, feeMultiplier: nu
     dispatch(notifyError(e, 'mainRevoke'))
     dispatch(updateAllowance(allowance.isFetching(false)))
   }
-}
-
-// eslint-disable-next-line complexity
-export const createNewChildAddress = ({ blockchain, tokens, name, deriveNumber }) => async (dispatch, getState) => {
-  const state = getState()
-  const signer = getEthereumSigner(state)
-  const account = getState().get(DUCK_SESSION).account
-  const wallets = getWallets(state)
-
-  const lastDeriveNumbers = {}
-  Object.values(wallets)
-    .forEach((wallet) => {
-      if (wallet.derivedPath && isOwner(wallet, account)) {
-        if (!lastDeriveNumbers[wallet.blockchain()] || (lastDeriveNumbers[wallet.blockchain()] && lastDeriveNumbers[wallet.blockchain()] < wallet.deriveNumber)) {
-          lastDeriveNumbers[wallet.blockchain()] = wallet.deriveNumber
-        }
-      }
-    })
-
-  let newDeriveNumber = deriveNumber
-  let derivedPath
-  let newWallet
-  let address
-
-  switch (blockchain) {
-    case BLOCKCHAIN_ETHEREUM:
-      if (newDeriveNumber === undefined || newDeriveNumber === null) {
-        newDeriveNumber = lastDeriveNumbers.hasOwnProperty(blockchain) ? lastDeriveNumbers[blockchain] + 1 : 0
-      }
-      derivedPath = `${WALLET_HD_PATH}/${newDeriveNumber}`
-      const newWalletSigner = await EthereumMemoryDevice.getDerivedWallet(signer.privateKey, derivedPath)
-      address = newWalletSigner.address
-      break
-
-    case BLOCKCHAIN_BITCOIN:
-      if (newDeriveNumber === undefined || newDeriveNumber === null) {
-        newDeriveNumber = lastDeriveNumbers.hasOwnProperty(blockchain) ? lastDeriveNumbers[blockchain] + 1 : 0
-      }
-      derivedPath = `${WALLET_HD_PATH}/${newDeriveNumber}`
-      const createNewChildAddress = (deriveNumber) => {
-        let coinType = null
-
-        switch (this._id) {
-          case BLOCKCHAIN_BITCOIN:
-            coinType = this._engine._network === bitcoin.networks.testnet
-              ? COIN_TYPE_BTC_TESTNET
-              : COIN_TYPE_BTC_MAINNET
-            break
-          case BLOCKCHAIN_LITECOIN:
-            coinType = this._engine._network === bitcoin.networks.litecoin_testnet
-              ? COIN_TYPE_LTC_TESTNET
-              : COIN_TYPE_LTC_MAINNET
-            break
-        }
-        if (coinType) {
-          const wallet = bitcoin.HDNode
-            .fromSeedBuffer(Buffer.from(this._wallet.keyPair.privateKey, 'hex'), this._network)
-            .derivePath(`m/44'/${coinType}'/0'/0/0/${deriveNumber}`)
-
-          this._walletsMap[wallet.getAddress()] = wallet
-
-          return wallet
-        } else {
-          return null
-        }
-      }
-      newWallet = createNewChildAddress(newDeriveNumber)
-      address = newWallet.getAddress()
-      dispatch(BitcoinMiddlewaresAPI.requestBitcoinSubscribeWalletByAddress(BLOCKCHAIN_BITCOIN, address))
-      break
-
-    case BLOCKCHAIN_LITECOIN:
-      if (newDeriveNumber === undefined || newDeriveNumber === null) {
-        newDeriveNumber = lastDeriveNumbers.hasOwnProperty(blockchain) ? lastDeriveNumbers[blockchain] + 1 : 0
-      }
-      derivedPath = `${WALLET_HD_PATH}/${newDeriveNumber}`
-      newWallet = ltcProvider.createNewChildAddress(newDeriveNumber)
-      address = newWallet.getAddress()
-      dispatch(BitcoinMiddlewaresAPI.requestBitcoinSubscribeWalletByAddress(BLOCKCHAIN_LITECOIN, address))
-      break
-
-    case BLOCKCHAIN_BITCOIN_GOLD:
-    case BLOCKCHAIN_NEM:
-    case BLOCKCHAIN_WAVES:
-    default:
-      return null
-  }
-
-  const wallet = new WalletModel({
-    name,
-    address,
-    owners: [account],
-    isFetched: true,
-    deriveNumber: newDeriveNumber,
-    derivedPath,
-    blockchain,
-    customTokens: tokens,
-    isDerived: true,
-  })
-
-  dispatch(setWallet(wallet))
-  dispatch(updateWalletBalance({ wallet }))
 }

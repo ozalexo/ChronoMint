@@ -6,10 +6,11 @@
 import { DUCK_PERSIST_ACCOUNT } from '@chronobank/core/redux/persistAccount/constants'
 import { I18n, loadTranslations, setLocale } from 'react-redux-i18n'
 import { nodesInit } from '@chronobank/nodes/redux/actions'
+import { middlewareConnect } from '@chronobank/nodes/middleware/thunks'
 // import { WebSocketService } from '@chronobank/core/services/WebSocketService'
 import moment from 'moment'
 import { DUCK_I18N } from './redux/i18n/constants'
-import { loadI18n } from './redux/i18n/actions'
+import { loadI18n } from './redux/i18n/thunks'
 import translations from './i18n'
 
 export const initPrimaryNodes = async (store) => {
@@ -38,7 +39,8 @@ export const initI18N = async (store) => {
 
 export const initChronobankMiddlewares = async (store) => {
   // // dispatch(preselectNetwork()) // Automatic selection of a primary node and network (mainnet/testnet)
-  // await store.dispatch(nodesInit()) // Init Nodes middlware (working with Ehtereum primary nodes via web3)
+  store.dispatch(nodesInit()) // Init Nodes middlware (working with Ehtereum primary nodes via web3)
+  store.dispatch(middlewareConnect())
   // // TODO: WebSocketService we be removed. Let's it be here for now
   // WebSocketService.initWebSocketService(store)
 }

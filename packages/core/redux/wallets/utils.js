@@ -19,3 +19,7 @@ export const createNewChildAddress = (deriveNumber, blockchain, coinType,bcNetwo
 
   return wallet
 }
+
+export const isOwner = (wallet, account) => {
+  return wallet.owners.includes(account)
+}

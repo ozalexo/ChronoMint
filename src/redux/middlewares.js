@@ -9,6 +9,7 @@ import thunk from 'redux-thunk'
 
 import axiosMiddleware from '@chronobank/nodes/httpNodes/axiosMiddleware'
 import primaryNodesReduxMiddleware from '@chronobank/nodes/store/primaryNodesReduxMiddleware'
+import chronobankMiddlewaresReduxMiddleware from '@chronobank/nodes/store/chronobankMiddlewaresReduxMiddleware'
 
 const getReduxLoggerMiddleware = () => {
   // Highest priority, IGNORED_ACTIONS and DOMAINS are ignored by WHITE_LIST
@@ -102,6 +103,7 @@ export default (history) => {
     thunk,
     routerMiddleware(history),
     primaryNodesReduxMiddleware,
+    chronobankMiddlewaresReduxMiddleware,
     axiosMiddleware,
   ]
   const isDevelopmentEnv = process.env.NODE_ENV === 'development'

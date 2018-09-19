@@ -83,3 +83,9 @@ export const requestBitcoinTransactionByHash = (blockchain, txHash) =>
  */
 export const requestBitcoinEstimateFeeRate =  (blockchain) =>
   chainsMapping[blockchain].requestEstimateFeeRate()
+
+/**
+ * estimate fee rate (based on last 6 blocks)
+ */
+export const requestBlocksHeight =  (blockchain) =>
+  chainsMapping[blockchain].requestBlocksHeight()

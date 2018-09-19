@@ -2,9 +2,7 @@
  * Copyright 2017–2018, LaborX PTY
  * Licensed under the AGPL Version 3 license.
  */
-
-import { nemProvider } from '@chronobank/login/network/NemProvider'
-import { wavesProvider } from '@chronobank/login/network/WavesProvider'
+import * as BitcoinMiddlewaresAPI from '@chronobank/nodes/httpNodes/api/chronobankNodes/bitcoins'
 import WavesDAO from '@chronobank/core/dao/WavesDAO'
 import { bccDAO, btcDAO, btgDAO, ltcDAO } from '../../dao/BitcoinDAO'
 import ERC20ManagerDAO from '../../dao/ERC20ManagerDAO'
@@ -96,7 +94,7 @@ export const initTokens = () => async (dispatch, getState) => {
 
 export const initBtcLikeTokens = () => async (dispatch, getState) => {
   const state = getState()
-  const btcLikeTokens = [btcDAO, bccDAO, btgDAO, ltcDAO]
+  const btcLikeTokens = [btcDAO(dispatch), bccDAO(dispatch), btgDAO(dispatch), ltcDAO(dispatch)]
   const currentCount = state.get(DUCK_TOKENS).leftToFetch()
   dispatch(TokensActions.setTokensFetchingCount(currentCount + btcLikeTokens.length))
 
@@ -104,9 +102,10 @@ export const initBtcLikeTokens = () => async (dispatch, getState) => {
     btcLikeTokens
       .map(async (dao) => {
         try {
+          const blockchain = dao.getBlockchain()
           dao.on(EVENT_UPDATE_LAST_BLOCK, (newBlock) => {
             const blocks = state.get(DUCK_TOKENS).latestBlocks()
-            const currentBlock = blocks[dao.getBlockchain()]
+            const currentBlock = blocks[blockchain]
             if (currentBlock && newBlock.block.blockNumber > currentBlock.blockNumber) {
               dispatch(TokensActions.setLatestBlock(newBlock.blockchain, newBlock.block))
             }
@@ -115,9 +114,9 @@ export const initBtcLikeTokens = () => async (dispatch, getState) => {
           const token = await dao.fetchToken()
           tokenService.registerDAO(token, dao)
           dispatch(TokensActions.tokenFetched(token))
-          const currentBlock = await dao.getCurrentBlockHeight()
-          dispatch(TokensActions.setLatestBlock(token.blockchain(), { blockNumber: currentBlock.currentBlock }))
-        } catch (e) {
+          const currentBlock = await dispatch(BitcoinMiddlewaresAPI.requestBlocksHeight(blockchain))
+          dispatch(TokensActions.setLatestBlock(blockchain, { blockNumber: currentBlock.currentBlock }))
+        } catch (error) {
           dispatch(TokensActions.tokensLoadingFailed())
         }
       }),

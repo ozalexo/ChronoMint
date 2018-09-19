@@ -3,6 +3,8 @@
  * Licensed under the AGPL Version 3 license.
  */
 
+/* eslint-disable no-underscore-dangle */
+
 import type AbstractModel from '../models/AbstractModelOld'
 import ProfileModel from '../models/ProfileModel'
 import AbstractContractDAO from './AbstractContractDAO'

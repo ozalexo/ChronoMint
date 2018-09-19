@@ -3,13 +3,12 @@
  * Licensed under the AGPL Version 3 license.
  */
 
-import { bccProvider, btcProvider, btgProvider, ltcProvider } from '@chronobank/login/network/BitcoinProvider'
-import EventEmitter from 'events'
 import BigNumber from 'bignumber.js'
+import bitcoin from 'bitcoinjs-lib'
+import EventEmitter from 'events'
 import Amount from '../models/Amount'
 import TokenModel from '../models/tokens/TokenModel'
 import TxModel from '../models/TxModel'
-import { bitcoinAddress } from '../models/validator'
 import {
   BLOCKCHAIN_BITCOIN,
   BLOCKCHAIN_BITCOIN_CASH,
@@ -27,24 +26,36 @@ const EVENT_BALANCE = 'balance'
 const EVENT_LAST_BLOCK = 'lastBlock'
 
 export default class BitcoinDAO extends EventEmitter {
-  constructor (name, symbol, bitcoinProvider) {
+  constructor (name, symbol, dispatch) {
     super()
-    this._name = name
+    this.dispatch = dispatch
+    this._blockchainName = name
     this._symbol = symbol
-    this._bitcoinProvider = bitcoinProvider
     this._decimals = 8
   }
 
   getBlockchain () {
-    return this._name
+    return this._blockchainName
   }
 
+  // addressValidator(recipient, true, token.blockchain())
   getAddressValidator () {
-    return bitcoinAddress(this._bitcoinProvider.isAddressValid.bind(this._bitcoinProvider), this._name)
-  }
-
-  getAccount () {
-    return this._bitcoinProvider.getAddress()
+    const isAddressValid = (address) => {
+      try {
+        bitcoin.address.toOutputScript(address, this._blockchainName)
+        return true
+      } catch (e) {
+        return false
+      }
+    }
+    const bitcoinAddress = (address, required = true) => {
+      // TODO: @ipavlenko: Provide better validation
+      if ((!address && required) || (address && !isAddressValid(address))) {
+        return { value: 'errors.invalidAddress', blockchain: this._blockchainName }
+      }
+      return null
+    }
+    return bitcoinAddress
   }
 
   getInitAddress () {
@@ -52,23 +63,15 @@ export default class BitcoinDAO extends EventEmitter {
     return `Bitcoin/${this._symbol}`
   }
 
-  getCurrentBlockHeight () {
-    return this._bitcoinProvider.getCurrentBlockHeight()
-  }
-
   isInitialized () {
-    // return true
-    return this._bitcoinProvider.isInitialized()
+    return true
+    // return this._bitcoinProvider.isInitialized()
   }
 
   hasBalancesStream () {
     // Balance should not be fetched after transfer notification,
     // it will be updated from the balances event stream
     return true
-  }
-
-  async getFeeRate () {
-    return this._bitcoinProvider.getFeeRate()
   }
 
   getAccountBalances (address) {
@@ -103,7 +106,7 @@ export default class BitcoinDAO extends EventEmitter {
           symbol: this._symbol,
           value: new Amount(tx.value, this._symbol),
           fee: new Amount(tx.fee, this._symbol),
-          blockchain: this._name,
+          blockchain: this._blockchainName,
         }))
       }
     } catch (e) {
@@ -151,7 +154,7 @@ export default class BitcoinDAO extends EventEmitter {
           symbol: this._symbol,
           value: new Amount(tx.value, this._symbol),
           fee: new Amount(tx.fee, this._symbol),
-          blockchain: this._name,
+          blockchain: this._blockchainName,
         }),
       )
     })
@@ -166,7 +169,7 @@ export default class BitcoinDAO extends EventEmitter {
   async watchLastBlock () {
     this._bitcoinProvider.addListener(EVENT_LAST_BLOCK, async ({ block }) => {
       this.emit(EVENT_UPDATE_LAST_BLOCK, {
-        blockchain: this._name,
+        blockchain: this._blockchainName,
         block: { blockNumber: block },
       })
     })
@@ -187,14 +190,13 @@ export default class BitcoinDAO extends EventEmitter {
       console.warn(message)
       throw new Error(message)
     }
-    // const feeRate = await this.getFeeRate()
 
     return new TokenModel({
-      name: this._name,
+      name: this._blockchainName,
       decimals: this._decimals,
       symbol: this._symbol,
       isFetched: true,
-      blockchain: this._name,
+      blockchain: this._blockchainName,
       feeRate: 200,
     })
   }
@@ -204,7 +206,7 @@ export default class BitcoinDAO extends EventEmitter {
   }
 }
 
-export const btcDAO = new BitcoinDAO(BLOCKCHAIN_BITCOIN, 'BTC', btcProvider)
-export const bccDAO = new BitcoinDAO(BLOCKCHAIN_BITCOIN_CASH, 'BCC', bccProvider)
-export const btgDAO = new BitcoinDAO(BLOCKCHAIN_BITCOIN_GOLD, 'BTG', btgProvider)
-export const ltcDAO = new BitcoinDAO(BLOCKCHAIN_LITECOIN, 'LTC', ltcProvider)
+export const btcDAO = (dispatch) => new BitcoinDAO(BLOCKCHAIN_BITCOIN, 'BTC', dispatch)
+export const bccDAO = (dispatch) => new BitcoinDAO(BLOCKCHAIN_BITCOIN_CASH, 'BCC', dispatch)
+export const btgDAO = (dispatch) => new BitcoinDAO(BLOCKCHAIN_BITCOIN_GOLD, 'BTG', dispatch)
+export const ltcDAO = (dispatch) => new BitcoinDAO(BLOCKCHAIN_LITECOIN, 'LTC', dispatch)

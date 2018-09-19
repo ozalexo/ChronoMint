@@ -64,16 +64,11 @@ class IsUserAuth extends React.Component {
   static propTypes = {
     isLoggedIn: PropTypes.bool,
   }
-  static defaultProps = {
-    isLoggedIn: false,
-  }
+
   render () {
-    return this.props.isLoggedIn
-      ? (
-        <Redirect from='/' to='/wallets' />
-      ) : (
-        <Redirect from='/' to='/login' />
-      )
+    if (this.props.isLoggedIn) return <Redirect from='/' to='/wallets' />
+
+    return <Redirect from='/' to='/login' />
   }
 }
 const CIsUserAuth = connect(mapStateToProps, null)(IsUserAuth)

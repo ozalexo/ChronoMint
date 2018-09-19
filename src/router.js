@@ -3,16 +3,13 @@
  * Licensed under the AGPL Version 3 license.
  */
 
-import PropTypes from 'prop-types'
 import Markup from 'layouts/Markup'
 import React from 'react'
-import { connect } from 'react-redux'
-import { Route, Switch, Redirect } from 'react-router-dom'
+import { Route, Switch } from 'react-router-dom'
 import { ConnectedRouter } from 'connected-react-router/immutable'
 import LoginForm from '@chronobank/login-ui/components/LoginForm/LoginForm'
 import NotFoundPage from '@chronobank/login-ui/components/NotFoundPage/NotFoundPage'
 import LoginWithOptions from '@chronobank/login-ui/components/LoginWithOptions/LoginWithOptions'
-import { DUCK_SESSION } from '@chronobank/core/redux/session/constants'
 import Splash from 'layouts/Splash/Splash'
 import {
   AssetsPage,
@@ -37,6 +34,7 @@ import MetamaskLoginPage from 'components/login/MetamaskLoginPage/MetamaskLoginP
 import RecoverAccountPage from 'components/login/RecoverAccountPage/RecoverAccountPage'
 import AccountSelectorContainer from '@chronobank/login-ui/components/AccountSelector/AccountSelectorContainer'
 import CreateAccountPage from 'components/login/CreateAccountPage/CreateAccountPage'
+import ProtectedRoute from 'components/ProtectedRoute/ProtectedRoute'
 import './styles/themes/default.scss'
 
 const NotFound = () => (
@@ -55,29 +53,11 @@ const hashLinkScroll = () => {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    isLoggedIn: state.get(DUCK_SESSION).isSession,
-  }
-}
-class IsUserAuth extends React.Component {
-  static propTypes = {
-    isLoggedIn: PropTypes.bool,
-  }
-
-  render () {
-    if (this.props.isLoggedIn) return <Redirect from='/' to='/wallets' />
-
-    return <Redirect from='/' to='/login' />
-  }
-}
-const CIsUserAuth = connect(mapStateToProps, null)(IsUserAuth)
-
 const router = (history) => (
   <ConnectedRouter history={history} onUpdate={hashLinkScroll}>
     <Switch>
       <Splash>
-        <Route exact path='/' component={CIsUserAuth} />
+        {/* <ProtectedRoute exact path='/' component={WalletsPage} /> */}
         <Route exact path='/login' component={LoginForm} />
         <Route exact path='/create-account' component={CreateAccountPage} />
         <Route exact path='/import-methods' component={LoginWithOptions} />
@@ -91,18 +71,18 @@ const router = (history) => (
         <Route exact path='/upload-wallet' component={WalletImportPage} />
       </Splash>
       <Markup>
-        <Route exact path='/2fa' component={TwoFAPage} />
-        <Route exact path='/wallets' component={WalletsPage} />
-        <Route exact path='/wallet' component={WalletPage} />
-        <Route exact path='/add-wallet' component={AddWalletPage} />
-        <Route exact path='/deposits' component={DepositsPage} />
-        <Route exact path='/deposit' component={DepositPage} />
-        <Route exact path='/rewards' component={RewardsPage} />
-        <Route exact path='/voting' component={VotingPage} />
-        <Route exact path='/poll' component={PollPage} />
-        <Route exact path='/new-poll' component={NewPollPage} />
-        <Route exact path='/vote-history' component={VoteHistoryPage} />
-        <Route exact path='/assets' component={AssetsPage} />
+        <ProtectedRoute exact path='/2fa' component={TwoFAPage} />
+        <ProtectedRoute exact path='/wallets' component={WalletsPage} />
+        <ProtectedRoute exact path='/wallet' component={WalletPage} />
+        <ProtectedRoute exact path='/add-wallet' component={AddWalletPage} />
+        <ProtectedRoute exact path='/deposits' component={DepositsPage} />
+        <ProtectedRoute exact path='/deposit' component={DepositPage} />
+        <ProtectedRoute exact path='/rewards' component={RewardsPage} />
+        <ProtectedRoute exact path='/voting' component={VotingPage} />
+        <ProtectedRoute exact path='/poll' component={PollPage} />
+        <ProtectedRoute exact path='/new-poll' component={NewPollPage} />
+        <ProtectedRoute exact path='/vote-history' component={VoteHistoryPage} />
+        <ProtectedRoute exact path='/assets' component={AssetsPage} />
       </Markup>
       <Route component={NotFound} />
     </Switch>

@@ -177,6 +177,7 @@ class LoginForm extends React.Component {
   }
 
   render () {
+    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>> LoginForm', this.props)
     const {
       handleSubmit,
       navigateToSelectWallet,

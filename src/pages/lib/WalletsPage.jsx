@@ -11,6 +11,7 @@ import './WalletPage.scss'
 
 export default class WalletsPage extends Component {
   render () {
+    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>> WalletsPage')
     return (
       <div styleName='root'>
         <CSSTransitionGroup

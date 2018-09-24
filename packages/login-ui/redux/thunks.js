@@ -110,7 +110,7 @@ export const onSubmitLoginForm = (password) => async (dispatch, getState) => {
 
         // dispatch(PersistAccountActions.accountSelect(wallet))
         dispatch(SessionThunks.createNetworkSession(accountWallet.address))
-        dispatch(LoginUINavActions.navigateToRoot()) // TODO: need to check lastURL
+        dispatch(LoginUINavActions.navigateToWallets()) // TODO: need to check lastURL
       } catch (e) {
         //eslint-disable-next-line
         console.warn('Device errors: ', e)

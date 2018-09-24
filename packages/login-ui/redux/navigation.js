@@ -117,3 +117,6 @@ export const navigateToWalletUploadMethod = () => (dispatch) => {
 
 export const navigateToRoot = () => (dispatch) =>
   dispatch(push('/'))
+
+export const navigateToWallets = () => (dispatch) =>
+  dispatch(push('/wallets'))

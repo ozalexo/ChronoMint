@@ -16,28 +16,11 @@ function mapStateToProps (state) {
 
 class ProtectedRoute extends PureComponent {
   render () {
-    const { isLoggedIn, component, location, ...rest } = this.props
+    const { isLoggedIn, ...rest } = this.props
 
-    if (isLoggedIn) {
-      return (
-        <Route
-          {...rest}
-          location={location}
-          component={component}
-        />
-      )
-    }
+    if (!isLoggedIn) return <Redirect to={{ pathname: '/login' }} />
 
-    return (
-      <Redirect
-        to={{
-          pathname: '/login',
-          state: {
-            from: location,
-          },
-        }}
-      />
-    )
+    return <Route {...rest} />
   }
 }
 

@@ -3,7 +3,6 @@
  * Licensed under the AGPL Version 3 license.
  */
 
-import Markup from 'layouts/Markup'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Route, Switch } from 'react-router-dom'
@@ -11,7 +10,6 @@ import { ConnectedRouter } from 'connected-react-router/immutable'
 import LoginForm from '@chronobank/login-ui/components/LoginForm/LoginForm'
 import NotFoundPage from '@chronobank/login-ui/components/NotFoundPage/NotFoundPage'
 import LoginWithOptions from '@chronobank/login-ui/components/LoginWithOptions/LoginWithOptions'
-import Splash from 'layouts/Splash/Splash'
 import {
   AssetsPage,
   RewardsPage,
@@ -36,6 +34,7 @@ import RecoverAccountPage from 'components/login/RecoverAccountPage/RecoverAccou
 import AccountSelectorContainer from '@chronobank/login-ui/components/AccountSelector/AccountSelectorContainer'
 import CreateAccountPage from 'components/login/CreateAccountPage/CreateAccountPage'
 import ProtectedRoute from 'components/ProtectedRoute/ProtectedRoute'
+import LoginRoute from 'components/LoginRoute/LoginRoute'
 import './styles/themes/default.scss'
 
 // TODO: Remove it and use https://reacttraining.com/react-router/web/guides/scroll-restoration
@@ -58,41 +57,33 @@ export default class Router extends PureComponent {
   render () {
     return (
       <ConnectedRouter history={this.props.history} onUpdate={hashLinkScroll}>
-        <div>
-          <Switch>
-            <Splash>
-              <ProtectedRoute exact path='/' component={WalletsPage} />
-              <Route exact path='/login' component={LoginForm} />
-              <Route exact path='/create-account' component={CreateAccountPage} />
-              <Route exact path='/import-methods' component={LoginWithOptions} />
-              <Route exact path='/ledger-login' component={LedgerLoginPage} />
-              <Route exact path='/mnemonic-login' component={MnemonicImportPage} />
-              <Route exact path='/plugin-login' component={MetamaskLoginPage} />
-              <Route exact path='/private-key-login' component={PrivateKeyImportPage} />
-              <Route exact path='/recover-account' component={RecoverAccountPage} />
-              <Route exact path='/select-account' component={AccountSelectorContainer} />
-              <Route exact path='/trezor-login' component={TrezorLoginPage} />
-              <Route exact path='/upload-wallet' component={WalletImportPage} />
-            </Splash>
-            <Markup>
-              <ProtectedRoute exact path='/2fa' component={TwoFAPage} />
-              <ProtectedRoute exact path='/wallets' component={WalletsPage} />
-              <ProtectedRoute exact path='/wallet' component={WalletPage} />
-              <ProtectedRoute exact path='/add-wallet' component={AddWalletPage} />
-              <ProtectedRoute exact path='/deposits' component={DepositsPage} />
-              <ProtectedRoute exact path='/deposit' component={DepositPage} />
-              <ProtectedRoute exact path='/rewards' component={RewardsPage} />
-              <ProtectedRoute exact path='/voting' component={VotingPage} />
-              <ProtectedRoute exact path='/poll' component={PollPage} />
-              <ProtectedRoute exact path='/new-poll' component={NewPollPage} />
-              <ProtectedRoute exact path='/vote-history' component={VoteHistoryPage} />
-              <ProtectedRoute exact path='/assets' component={AssetsPage} />
-            </Markup>
-            <Splash>
-              <Route component={NotFoundPage} />
-            </Splash>
-          </Switch>
-        </div>
+        <Switch>
+          <LoginRoute exact path='/login' component={LoginForm} />
+          <LoginRoute exact path='/create-account' component={CreateAccountPage} />
+          <LoginRoute exact path='/import-methods' component={LoginWithOptions} />
+          <LoginRoute exact path='/ledger-login' component={LedgerLoginPage} />
+          <LoginRoute exact path='/mnemonic-login' component={MnemonicImportPage} />
+          <LoginRoute exact path='/plugin-login' component={MetamaskLoginPage} />
+          <LoginRoute exact path='/private-key-login' component={PrivateKeyImportPage} />
+          <LoginRoute exact path='/recover-account' component={RecoverAccountPage} />
+          <LoginRoute exact path='/select-account' component={AccountSelectorContainer} />
+          <LoginRoute exact path='/trezor-login' component={TrezorLoginPage} />
+          <LoginRoute exact path='/upload-wallet' component={WalletImportPage} />
+          <ProtectedRoute exact path='/' component={WalletsPage} />
+          <ProtectedRoute exact path='/2fa' component={TwoFAPage} />
+          <ProtectedRoute exact path='/wallets' component={WalletsPage} />
+          <ProtectedRoute exact path='/wallet' component={WalletPage} />
+          <ProtectedRoute exact path='/add-wallet' component={AddWalletPage} />
+          <ProtectedRoute exact path='/deposits' component={DepositsPage} />
+          <ProtectedRoute exact path='/deposit' component={DepositPage} />
+          <ProtectedRoute exact path='/rewards' component={RewardsPage} />
+          <ProtectedRoute exact path='/voting' component={VotingPage} />
+          <ProtectedRoute exact path='/poll' component={PollPage} />
+          <ProtectedRoute exact path='/new-poll' component={NewPollPage} />
+          <ProtectedRoute exact path='/vote-history' component={VoteHistoryPage} />
+          <ProtectedRoute exact path='/assets' component={AssetsPage} />
+          <Route component={NotFoundPage} />
+        </Switch>
       </ConnectedRouter>
     )
   }

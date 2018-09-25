@@ -7,6 +7,7 @@ import React, { PureComponent } from 'react'
 import { getIsSession } from '@chronobank/core/redux/session/selectors'
 import { connect } from 'react-redux'
 import { Route, Redirect } from 'react-router-dom'
+import Markup from 'layouts/Markup'
 
 function mapStateToProps (state) {
   return {
@@ -20,7 +21,11 @@ class ProtectedRoute extends PureComponent {
 
     if (!isLoggedIn) return <Redirect to={{ pathname: '/login' }} />
 
-    return <Route {...rest} />
+    return (
+      <Markup>
+        <Route {...rest} />
+      </Markup>
+    )
   }
 }
 
